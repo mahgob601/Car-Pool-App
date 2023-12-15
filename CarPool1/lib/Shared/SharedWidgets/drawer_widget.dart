@@ -1,0 +1,107 @@
+import 'package:car_pool1/Cart.dart';
+import 'package:car_pool1/Globals/global_var.dart';
+import 'package:car_pool1/HomePage.dart';
+import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
+import 'package:car_pool1/TrackDriverScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+import '../../LoginScreen.dart';
+import '../../OrderHistory.dart';
+import '../../ProfilePage.dart';
+
+class myDrawer extends StatefulWidget {
+  const myDrawer({super.key});
+
+  @override
+  State<myDrawer> createState() => _myDrawerState();
+}
+
+class _myDrawerState extends State<myDrawer> {
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+
+      child: ListView(
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: [
+          const DrawerHeader(
+
+            decoration: BoxDecoration(
+              color: Colors.teal,
+            ),
+            child: Text(''),
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.home,
+
+            ),
+            title: const Text('Available Trips'),
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.person,
+
+            ),
+            title: const Text('My Profile'),
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyProfile()));
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.location_on,
+            ),
+            title: const Text('Track Driver'),
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => TrackDriverScreen()));
+            },
+          ),
+
+          ListTile(
+            leading: Icon(
+              Icons.shopping_cart,
+            ),
+            title: const Text('My Cart'),
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {return MyCart();}));
+            },
+          ),
+
+          ListTile(
+            leading: Icon(
+              Icons.history,
+            ),
+            title: const Text('Trips History'),
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {return OrderHistory();}));
+            },
+          ),
+
+          ListTile(
+            leading: Icon(
+              Icons.logout,
+            ),
+            title: const Text('Sign out'),
+            onTap: () async {
+              userName = '';
+              userEmail = '';
+              profileImageURL = '';
+              tempProfileImage =null;
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginScreen()));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+

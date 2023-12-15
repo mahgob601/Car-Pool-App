@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "1064474608117",
+    "firebase_url": "https://asu-carpool-20306-default-rtdb.firebaseio.com",
+    "project_id": "asu-carpool-20306",
+    "storage_bucket": "asu-carpool-20306.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064474608117:android:dba0afa8b0d0c9b6fee0bc",
+        "android_client_info": {
+          "package_name": "com.example.car_pool1_driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgJrn2TWJj6E-R0av-Vm1s38H8enPGvUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064474608117:android:1475553dafc19e2efee0bc",
+        "android_client_info": {
+          "package_name": "com.yassinmahgoub.carpool1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgJrn2TWJj6E-R0av-Vm1s38H8enPGvUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
