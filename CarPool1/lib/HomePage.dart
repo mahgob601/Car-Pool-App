@@ -17,6 +17,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void initState() {
+    super.initState();
+    // Simulate fetching data from a database
+    //_fetchRideRequests();
+  }
   late List<dynamic> availableTrips = [];
   late List<dynamic> myDriverInfo = [];
 

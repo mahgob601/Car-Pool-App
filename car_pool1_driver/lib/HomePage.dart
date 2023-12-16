@@ -3,8 +3,10 @@ import 'package:car_pool1_driver/OrderHistory.dart';
 import 'package:car_pool1_driver/ProfilePage.dart';
 import 'package:car_pool1_driver/Shared/SharedTheme/SharedColor.dart';
 import 'package:car_pool1_driver/Shared/SharedWidgets/drawer_widget.dart';
+import 'package:car_pool1_driver/models/global_var.dart';
 import 'package:car_pool1_driver/trips/trip.dart';
 import 'package:car_pool1_driver/trips/trip_preferences.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,16 +15,71 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Trip> availableTrips = TripPreferences.myTrips;
+
+  late List<dynamic> availableTrips = [];
+  late List<dynamic> myDriverInfo = [];
+
+  DatabaseReference tripsRef = FirebaseDatabase.instance.ref("Trips/");
+  void initState() {
+    fetchmyData();
+    super.initState();
+  }
+
+
+  final Map<String, String> monthToCapital = {
+    '01': 'JAN',
+    '02': 'FEB',
+    '03': 'MAR',
+    '04': 'APR',
+    '05': 'MAY',
+    '06': 'JUN',
+    '07': 'JUL',
+    '08': 'AUG',
+    '09': 'SEP',
+    '10': 'OCT',
+    '11': 'NOV',
+    '12': 'DEC',
+  };
+
+  fetchmyData() async {
+    tripsRef.onValue.listen((event) {
+      if (event.snapshot.exists) {
+        availableTrips.clear();
+        Map <dynamic,dynamic> tripVals;
+        event.snapshot.children.forEach((child) {
+
+          tripVals = child.value as Map;
+          if(tripVals['Driver_ID'] == userID)
+          {
+            availableTrips.add(child.value);
+          }
+
+          //print(availableTrips);
+        });
+
+
+        setState(() {
+          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+
+        });
+      }
+      else {
+        availableTrips.clear();
+      }
+    }, onError: (error) {
+      print("error retrieving!");
+    });
+  }
 
 
   @override
   Widget build(BuildContext context) {
+    fetchmyData();
     return Scaffold(
       appBar: AppBar(
         title: Padding(
-          padding: const EdgeInsets.only(top:8.0),
-          child: Text('Available Trips',
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text('My Trips',
             style:
             TextStyle(
               color: Colors.white,
@@ -31,51 +88,68 @@ class _HomePageState extends State<HomePage> {
             ,),
         ),
         centerTitle: true,
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: SharedColor.tealColor,
       ),
       drawer: myDrawer(),
 
       body: Padding(
-        padding: const EdgeInsets.only(top:10.0),
+        padding: const EdgeInsets.only(top: 10.0),
         child: ListView.builder(
+          //future: availableTrips.length,
           itemCount: availableTrips.length,
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
               child: Card(
-                color: Colors.blueGrey,
+
+                color: availableTrips[index]["Booking_Status"] == 'Available'
+                    ? SharedColor.tealColor
+                    : Colors.orange,
                 child: ListTile(
+
                   title: Text(
-                    'From: ${availableTrips[index].meetingPoint}\nTo: ${availableTrips[index].dropPoint}',
+                    'From: ${availableTrips[index]["Pickup"]}\nTo: ${availableTrips[index]["Dropoff"]}',
                     style: TextStyle(
                         color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
 
 
                     ),
 
                   ),
-                  leading:Text(
-                      '${availableTrips[index].date}\n${availableTrips[index].time}',
+
+
+                  leading: Text(
+                    '${int.parse(availableTrips[index]["Date"].split(
+                        '-')[2])} ${monthToCapital[availableTrips[index]["Date"]
+                        .split('-')[1]]}\n${availableTrips[index]["Time"]}',
                     style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14
-                    ),
-                  ) ,
-                  trailing: ClipOval(
-                    child: Container(
-                      padding: EdgeInsets.all(2),
-                      color: Colors.blueGrey[600],
-                      child: IconButton(
-                        icon:Icon(Icons.add, color: Colors.white,),
-                        onPressed:(){} ,
-                      ),
+                        color: Colors.white70,
+                        fontSize: 14
                     ),
                   ),
-                  onTap: () {
+                  trailing: Text(
+                    '${availableTrips[index]["Offered_Price"]} EGP',
+                    style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16
+                    ),
+                  ),
+                  onTap: () async {
+                    //List<dynamic> driverInfo;
+                    //await fetchDriverData(availableTrips[index]['Driver_ID']);
+                    //print(myDriverInfo[0]['name']);
                     // Handle route selection, e.g., navigate to a details page
-                    _navigateToTripDetails(availableTrips[index]);
+                    /*_navigateToTripDetails(availableTrips[index], myDriverInfo[0]['name'], myDriverInfo[0]['ProfileImage'],
+                        myDriverInfo[0]['car_info'], myDriverInfo[0]['phone']);*/
+                    /*Navigator.push(context,
+                        MaterialPageRoute(builder: (context) =>
+                            TripDetailsPage(
+                                availableTrips[index], myDriverInfo[0]['name'],
+                                myDriverInfo[0]['ProfileImage'],
+                                myDriverInfo[0]['car_info'],
+                                myDriverInfo[0]['phone'])));*/
                   },
                 ),
               ),
@@ -86,146 +160,5 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _navigateToTripDetails(Trip trip) {
-    // Add navigation logic here, e.g., push a new page
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TripDetailsPage(trip)),
-    );
-  }
-}
 
-class TripDetailsPage extends StatelessWidget {
-  final Trip trip;
-
-
-
-  TripDetailsPage(this.trip);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(top:8.0),
-          child: Text('Trips Details',
-            style:
-            TextStyle(
-              color: Colors.white,
-            )
-
-            ,),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blueGrey,
-      ),
-      body:Center(
-        child: ListView(
-          children: [Center(
-            child: Row(
-              /*crossAxisAlignment: CrossAxisAlignment.center,*/
-
-
-              children: [
-                Center(
-                  child: Column(
-                   /* crossAxisAlignment: CrossAxisAlignment.center,*/
-                    children: [
-                      TripDetailCard(
-                        title: 'Destination',
-                        value: trip.dropPoint,
-                      ),
-                      SizedBox(height: 16.0),
-                      TripDetailCard(
-                        title: 'Pickup Point',
-                        value: trip.meetingPoint,
-                      ),
-                      SizedBox(height: 16.0),
-                      TripDetailCard(
-                        title: 'Driver Name',
-                        value: trip.driverName,
-                      ),
-                      SizedBox(height: 16.0),
-                      TripDetailCard(
-                        title: 'Pickup date',
-                        value: trip.date,
-                      ),
-                      SizedBox(height: 16.0),
-                      TripDetailCard(
-                        title: 'Pickup Time',
-                        value: trip.time.toString(),
-                      ),
-
-                      SizedBox(height: 16.0),
-                      TripDetailCard(
-                        title: 'Price',
-                        value: trip.price.toString(),
-                      ),
-                    ],
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ClipOval(
-                    child: Material(
-                      child: Ink.image(
-                        image: NetworkImage('https://cdn.aarp.net/content/dam/aarp/auto/2021/03/1140-man-driving-a-car.jpg'),
-                        fit: BoxFit.cover,
-                        width: 128,
-                        height: 128 ,
-
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),]
-        ),
-      ),
-    );
-  }
-}
-
-
-
-class TripDetailCard extends StatelessWidget {
-  final String title;
-  final String value;
-
-  TripDetailCard({required this.title, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Card(
-        color: Colors.teal,
-        elevation: 3.0,
-        child: Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white70
-                ),
-              ),
-              SizedBox(height: 8.0),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 15.0,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

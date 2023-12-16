@@ -76,7 +76,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
         reverse: true,
         child: Padding(
           padding: const EdgeInsets.only(top: 0),
-          child: selectedValue == "7.30" ? Column(
+          child: selectedValue == "7.30 AM" ? Column(
             children: [
 
               input_field('Pickup Point', Icons.my_location_rounded, pickupPointController, false),
@@ -146,7 +146,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       ),
                       DropdownMenuItem(
                         child: Text("5.30 PM"),
-                        value: "5.30 AM",
+                        value: "5.30 PM",
                       )
                     ], onChanged: (String? value) {
                       setState(() {
@@ -269,7 +269,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       ),
                       DropdownMenuItem(
                         child: Text("5.30 PM"),
-                        value: "5.30 AM",
+                        value: "5.30 PM",
                       )
                     ], onChanged: (String? value) {
                     setState(() {
