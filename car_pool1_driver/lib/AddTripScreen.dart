@@ -44,9 +44,9 @@ class _AddTripScreenState extends State<AddTripScreen> {
     }
   }
 
-  String selectedValue = "7.30";
-  String selectedPickup = "G3 Faculty of Eng ASU";
-  String selectedDropoff = "G3 Faculty of Eng ASU";
+  String selectedValue = "7.30 AM";
+  String selectedPickup = "G3 ASU Engineering";
+  String selectedDropoff = "G3 ASU Engineering";
 
   @override
   Widget build(BuildContext context) {
@@ -92,12 +92,12 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     value: selectedDropoff,
                     items: [
                       DropdownMenuItem(
-                          child: Text("G3 Faculty of Eng ASU"),
-                          value: "G3 Faculty of Eng ASU"
+                          child: Text("G3 ASU Engineering"),
+                          value: "G3 ASU Engineering"
                       ),
                       DropdownMenuItem(
-                        child: Text("G4 Faculty of Eng ASU"),
-                        value: "G4 Faculty of Eng ASU",
+                        child: Text("G4 ASU Engineering"),
+                        value: "G4 ASU Engineering",
                       )
                     ], onChanged: (String? dropvalue) {
                     setState(() {
@@ -142,11 +142,11 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     items: [
                       DropdownMenuItem(
                           child: Text("7.30 AM"),
-                          value: "7.30"
+                          value: "7.30 AM"
                       ),
                       DropdownMenuItem(
                         child: Text("5.30 PM"),
-                        value: "5.30",
+                        value: "5.30 AM",
                       )
                     ], onChanged: (String? value) {
                       setState(() {
@@ -184,7 +184,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                   else {
                     print(selectedDate.toString().split(' ')[0].split('-')[2]);
 
-                    TripControllerClass().addTrip(context, Trip(userID, pickupPointController.text.trim(), selectedDropoff, selectedDate.toString().split(' ')[0], selectedValue, offeredPriceController.text));
+                    TripControllerClass().addTrip(context, Trip(userID, pickupPointController.text.trim(), selectedDropoff, selectedDate.toString().split(' ')[0], selectedValue, offeredPriceController.text, 'Available',0, 'Not Started'));
 
                   }
                 },
@@ -213,12 +213,12 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     value: selectedPickup,
                     items: [
                       DropdownMenuItem(
-                          child: Text("G3 Faculty of Eng ASU"),
-                          value: "G3 Faculty of Eng ASU"
+                          child: Text("G3 ASU Engineering"),
+                          value: "G3 ASU Engineering"
                       ),
                       DropdownMenuItem(
-                        child: Text("G4 Faculty of Eng ASU"),
-                        value: "G4 Faculty of Eng ASU",
+                        child: Text("G4 ASU Engineering"),
+                        value: "G4 ASU Engineering",
                       )
                     ], onChanged: (String? pickvalue) {
                     setState(() {
@@ -265,11 +265,11 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     items: [
                       DropdownMenuItem(
                           child: Text("7.30 AM"),
-                          value: "7.30"
+                          value: "7.30 AM"
                       ),
                       DropdownMenuItem(
                         child: Text("5.30 PM"),
-                        value: "5.30",
+                        value: "5.30 AM",
                       )
                     ], onChanged: (String? value) {
                     setState(() {
@@ -305,7 +305,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                   }
                   else
                     {
-                      TripControllerClass().addTrip(context, Trip(userID, selectedPickup, destinationPointController.text.trim(), selectedDate.toString().split(' ')[0], selectedValue, offeredPriceController.text));
+                      TripControllerClass().addTrip(context, Trip(userID, selectedPickup, destinationPointController.text.trim(), selectedDate.toString().split(' ')[0], selectedValue, offeredPriceController.text,'Available',0, 'Not Started'));
                     }
 
                 },

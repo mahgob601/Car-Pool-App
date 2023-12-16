@@ -6,11 +6,15 @@ class Trip{
   String tripDate = '';
   String tripTime= '';
   String offeredPrice= '';
-  /*String driverName = '';
-  String carModel = '';
-  String driverProfileURL = '';*/
+  String bookingStatus = '';
+  int passengers = 0;
+  String rideStatus = '';
 
-  Trip(String driverID, /*String driverName, String driverProfileURL, String carModel,*/String pickup ,String dropoff,String tripDate,String tripTime,String offeredPrice)
+
+  Trip(String driverID,String pickup
+      ,String dropoff,String tripDate,String tripTime,String offeredPrice,
+      String bookingStatus, int passengers, String rideStatus
+      )
   {
     this.driverID = driverID;
     /*this.driverName = driverName;
@@ -21,6 +25,10 @@ class Trip{
     this.tripDate = tripDate;
     this.tripTime= tripTime;
     this.offeredPrice = offeredPrice;
+    this.bookingStatus = bookingStatus;
+    this.passengers = passengers;
+    this.rideStatus = rideStatus;
+
 
 
   }

@@ -63,25 +63,7 @@ class _myDrawerState extends State<myDrawer> {
             },
           ),
 
-          ListTile(
-            leading: Icon(
-              Icons.shopping_cart,
-            ),
-            title: const Text('Handle Requests'),
-            onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {return MyCart();}));
-            },
-          ),
 
-          ListTile(
-            leading: Icon(
-              Icons.history,
-            ),
-            title: const Text('Trips History'),
-            onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {return OrderHistory();}));
-            },
-          ),
 
           ListTile(
             leading: Icon(

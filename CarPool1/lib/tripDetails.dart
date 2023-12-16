@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 
 import 'Shared/SharedTheme/SharedColor.dart';
 import 'Shared/SharedTheme/SharedFont.dart';
+import 'Shared/SharedWidgets/snack_widget.dart';
 class TripDetailsPage extends StatelessWidget {
   final Map<dynamic,dynamic> myTrip;
   final String driverName;
   final String DriverURlProfile;
   final String carModel;
   final String phone;
+
 
   TripDetailsPage(this.myTrip, this.driverName, this.DriverURlProfile, this.carModel, this.phone);
   //print(myTrip);
@@ -74,7 +76,7 @@ class TripDetailsPage extends StatelessWidget {
 
                   SizedBox(height: 8),
                   Text(
-                    myTrip['Time'] == '5.30' ? "${myTrip['Time']} PM" : "${myTrip['Time']} AM" ,
+                    myTrip['Time'] ,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -115,17 +117,20 @@ class TripDetailsPage extends StatelessWidget {
                   ),
                   SizedBox(height: 18,),
                   Center(
-                    child: TextButton(
-                        child: Text('Book Trip', style: SharedFont.whiteStyle),
+                    child: ElevatedButton(
+                        child: Text(myTrip['Booking_Status'] == 'Available'? 'Book Trip' :  'Booked', style: SharedFont.whiteStyle),
                         style: TextButton.styleFrom(
-                            backgroundColor: Colors.blueGrey,
+                            backgroundColor: myTrip['Booking_Status'] == 'Available'? Colors.blueGrey[800]:Colors.orange,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                            maximumSize: Size(120.0, 50.0),
-                            minimumSize: Size(120.0, 50.0)
+                            maximumSize: Size(150.0, 50.0),
+                            minimumSize: Size(150.0, 50.0)
                         ),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => MyCart(myTrip['Pickup'],myTrip['Dropoff'], myTrip['Offered_Price'],myTrip['Trip_ID'] )));
-
+                          myTrip['Booking_Status'] == 'Available'?
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => MyCart(myTrip['Pickup'],myTrip['Dropoff'], myTrip['Offered_Price'],myTrip['Trip_ID'] )))
+                          : ScaffoldMessenger.of(context).showSnackBar(
+                              snack('Trip is fully booked', 3, Colors.orange)
+                          );
                         }
 
                     ),

@@ -53,15 +53,7 @@ class _myDrawerState extends State<myDrawer> {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyProfile()));
             },
           ),
-          ListTile(
-            leading: Icon(
-              Icons.location_on,
-            ),
-            title: const Text('Track Driver'),
-            onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => TrackDriverScreen()));
-            },
-          ),
+
 
 
 
@@ -69,7 +61,7 @@ class _myDrawerState extends State<myDrawer> {
             leading: Icon(
               Icons.history,
             ),
-            title: const Text('Trips History'),
+            title: const Text('Order History'),
             onTap: () {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {return OrderHistory();}));
             },

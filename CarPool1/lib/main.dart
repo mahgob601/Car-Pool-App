@@ -2,6 +2,7 @@ import 'package:car_pool1/Globals/global_var.dart';
 import 'package:car_pool1/HomePage.dart';
 import 'package:car_pool1/LoginScreen.dart';
 import 'package:car_pool1/ProfilePage.dart';
+import 'package:car_pool1/Shared/DBHandler/firebaseAuth.dart';
 import 'package:car_pool1/SignupScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,8 +30,9 @@ class MyApp extends StatelessWidget {
       ),
       home: StreamBuilder<User?>(builder: (context,snapshot)
       {
-        if(snapshot.hasData || userEmail == 'test@eng.asu.edu.eg')
+        if(snapshot.hasData) //|| userEmail == 'test@eng.asu.edu.eg')
           {
+            firebaseAuthClass().getProfileData(context);
             return HomePage();
           }
         if(snapshot.hasError)

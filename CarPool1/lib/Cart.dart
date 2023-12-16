@@ -6,6 +6,7 @@ import 'package:car_pool1/Shared/SharedWidgets/drawer_widget.dart';
 import 'package:intl/intl.dart';
 
 import 'Shared/SharedTheme/SharedFont.dart';
+import 'Shared/SharedWidgets/snack_widget.dart';
 class MyCart extends StatefulWidget {
   final String pickup;
   final String dropoff;
@@ -169,7 +170,9 @@ class _MyCartState extends State<MyCart> {
                     print('Payment in Cash selected');
                   } else {
                     // Handle other payment methods
-                    print('Processing payment...');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        snack('Please select a payment method', 3, Colors.red)
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(

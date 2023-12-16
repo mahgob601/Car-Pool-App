@@ -17,66 +17,66 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late List<dynamic> availableTrips=[];
-  late List<dynamic> myDriverInfo=[];
+  late List<dynamic> availableTrips = [];
+  late List<dynamic> myDriverInfo = [];
 
-  DatabaseReference tripsRef =  FirebaseDatabase.instance.ref("Trips/");
+  DatabaseReference tripsRef = FirebaseDatabase.instance.ref("Trips/");
 
   final Map<String, String> monthToCapital = {
-    '01': 'JAN', '02': 'FEB', '03': 'MAR', '04': 'APR', '05': 'MAY', '06': 'JUN',
-    '07': 'JUL', '08': 'AUG', '09': 'SEP', '10': 'OCT', '11': 'NOV', '12': 'DEC',
+    '01': 'JAN',
+    '02': 'FEB',
+    '03': 'MAR',
+    '04': 'APR',
+    '05': 'MAY',
+    '06': 'JUN',
+    '07': 'JUL',
+    '08': 'AUG',
+    '09': 'SEP',
+    '10': 'OCT',
+    '11': 'NOV',
+    '12': 'DEC',
   };
 
-  fetchDriverData(String driverID) async{
-    DatabaseReference driverInfoRef =  FirebaseDatabase.instance.ref("drivers");
+  fetchDriverData(String driverID) async {
+    DatabaseReference driverInfoRef = FirebaseDatabase.instance.ref("drivers");
     final snapshot = await driverInfoRef.child('${driverID}').get();
-    if(snapshot.exists)
-      {
-        myDriverInfo.clear();
-        myDriverInfo.add(snapshot.value);
-        print(snapshot.value);
-      }
-    else
-      {
-        myDriverInfo.clear();
-        print('no dattttttta!!!');
-      }
-
-
-
+    if (snapshot.exists) {
+      myDriverInfo.clear();
+      myDriverInfo.add(snapshot.value);
+      print(snapshot.value);
+    }
+    else {
+      myDriverInfo.clear();
+      print('no dattttttta!!!');
+    }
   }
-
-
 
 
   @override
   Widget build(BuildContext context) {
     tripsRef.onValue.listen((event) {
-      if(event.snapshot.exists)
-        {
-          availableTrips.clear();
-          event.snapshot.children.forEach((child) {
-
-            availableTrips.add(child.value);
-            //print(availableTrips);
-          });
+      if (event.snapshot.exists) {
+        availableTrips.clear();
+        event.snapshot.children.forEach((child) {
+          availableTrips.add(child.value);
+          //print(availableTrips);
+        });
 
 
-          setState(() {
+        setState(() {
 
-          });
-        }
-      else
-        {
-          availableTrips.clear();
-        }
+        });
+      }
+      else {
+        availableTrips.clear();
+      }
     }, onError: (error) {
       print("error retrieving!");
     });
     return Scaffold(
       appBar: AppBar(
         title: Padding(
-          padding: const EdgeInsets.only(top:8.0),
+          padding: const EdgeInsets.only(top: 8.0),
           child: Text('Available Trips',
             style:
             TextStyle(
@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
       drawer: myDrawer(),
 
       body: Padding(
-        padding: const EdgeInsets.only(top:10.0),
+        padding: const EdgeInsets.only(top: 10.0),
         child: ListView.builder(
           itemCount: availableTrips.length,
           itemBuilder: (context, index) {
@@ -99,15 +99,17 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.only(bottom: 10.0),
               child: Card(
 
-                color: SharedColor.tealColor,
+                color: availableTrips[index]["Booking_Status"] == 'Available'
+                    ? SharedColor.tealColor
+                    : Colors.orange,
                 child: ListTile(
 
                   title: Text(
                     'From: ${availableTrips[index]["Pickup"]}\nTo: ${availableTrips[index]["Dropoff"]}',
                     style: TextStyle(
                         color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
 
 
                     ),
@@ -115,30 +117,36 @@ class _HomePageState extends State<HomePage> {
                   ),
 
 
-                  leading:Text(
-                      '${int.parse(availableTrips[index]["Date"].split('-')[2])} ${monthToCapital[availableTrips[index]["Date"].split('-')[1]]}\n${availableTrips[index]["Time"]}',
+                  leading: Text(
+                    '${int.parse(availableTrips[index]["Date"].split(
+                        '-')[2])} ${monthToCapital[availableTrips[index]["Date"]
+                        .split('-')[1]]}\n${availableTrips[index]["Time"]}',
                     style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14
+                        color: Colors.white70,
+                        fontSize: 14
                     ),
-                  ) ,
+                  ),
                   trailing: Text(
                     '${availableTrips[index]["Offered_Price"]} EGP',
                     style: TextStyle(
                         color: Colors.white70,
                         fontSize: 16
                     ),
-                  ) ,
+                  ),
                   onTap: () async {
                     //List<dynamic> driverInfo;
                     await fetchDriverData(availableTrips[index]['Driver_ID']);
                     //print(myDriverInfo[0]['name']);
                     // Handle route selection, e.g., navigate to a details page
-                   /*_navigateToTripDetails(availableTrips[index], myDriverInfo[0]['name'], myDriverInfo[0]['ProfileImage'],
+                    /*_navigateToTripDetails(availableTrips[index], myDriverInfo[0]['name'], myDriverInfo[0]['ProfileImage'],
                         myDriverInfo[0]['car_info'], myDriverInfo[0]['phone']);*/
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => TripDetailsPage(availableTrips[index], myDriverInfo[0]['name'], myDriverInfo[0]['ProfileImage'],
-                        myDriverInfo[0]['car_info'], myDriverInfo[0]['phone'])));
+                        MaterialPageRoute(builder: (context) =>
+                            TripDetailsPage(
+                                availableTrips[index], myDriverInfo[0]['name'],
+                                myDriverInfo[0]['ProfileImage'],
+                                myDriverInfo[0]['car_info'],
+                                myDriverInfo[0]['phone'])));
                   },
                 ),
               ),
@@ -149,79 +157,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /*void _navigateToTripDetails(Map<dynamic,dynamic> trip, String DriverName, String DriverURlProfile, String carModel, String phone) {
-    // Add navigation logic here, e.g., push a new page
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TripDetailsPage(trip, DriverName, DriverURlProfile, carModel, phone)),
-    );
-  }*/
 }
-
-
-
-/*
-class TripDetailsPage extends StatefulWidget {
-  final Map<dynamic,dynamic> myTrip;
-  final String driverName;
-  final String DriverURlProfile;
-  final String carModel;
-  final String phone;
-  TripDetailsPage(this.myTrip, this.driverName, this.DriverURlProfile, this.carModel, this.phone);
-
-  @override
-  State<TripDetailsPage> createState() => _TripDetailsPageState();
-}
-
-class _TripDetailsPageState extends State<TripDetailsPage> {
-
-  //DatabaseReference driverInfoRef =  FirebaseDatabase.instance.ref("drivers/${myTrip[0]["Driver_ID"]}");
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Padding(
-            padding: const EdgeInsets.only(top:8.0),
-            child: Text('Trips Details',
-              style:
-              TextStyle(
-                color: Colors.white,
-              )
-
-              ,),
-          ),
-          centerTitle: true,
-          backgroundColor: SharedColor.tealColor,
-        ),
-        body:
-        Center(
-          child:Card(
-            //color: SharedColor.tealColor,
-            */
-/*decoration: BoxDecoration(
-              color: SharedColor.tealColor,
-                border: Border.all(
-                  color: SharedColor.tealColor,
-
-
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(20))
-            ),*//*
-
-            color: SharedColor.tealColor,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Driver: ${widget.driverName}',
-                )
-              ],
-            )
-
-          ),
-        )
-    );
-  }
-}
-*/

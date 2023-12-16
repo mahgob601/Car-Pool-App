@@ -19,6 +19,10 @@ class TripControllerClass{
       "Time":trip.tripTime,
       "Date": trip.tripDate,
       "Offered_Price": trip.offeredPrice,
+      "Booking_Status": trip.bookingStatus,
+      "Passengers": trip.passengers,
+      "Ride_Status": trip.rideStatus,
+
 
     };
     tripsRef.set(tripDataMap);
