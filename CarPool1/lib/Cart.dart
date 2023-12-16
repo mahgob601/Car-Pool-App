@@ -4,8 +4,14 @@ import 'package:car_pool1/User/purchases.dart';
 import 'package:car_pool1/User/purchases_preferences.dart';
 import 'package:car_pool1/Shared/SharedWidgets/drawer_widget.dart';
 import 'package:intl/intl.dart';
+
+import 'Shared/SharedTheme/SharedFont.dart';
 class MyCart extends StatefulWidget {
-  const MyCart({super.key});
+  final String pickup;
+  final String dropoff;
+  final String price;
+  final String tripID;
+  MyCart(this.pickup, this.dropoff, this.price ,this.tripID);
 
   @override
   State<MyCart> createState() => _MyCartState();
@@ -13,209 +19,166 @@ class MyCart extends StatefulWidget {
 
 class _MyCartState extends State<MyCart> {
 
-  final List<Purchase> inCart = [
-    PurchasesPreferences.myPurchases[0]
-  ];
+  bool isPaymentInCashSelected = false;
+  bool isCreditCardSelected = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(top:8.0),
-          child: Text('My Cart',
-            style:
-            TextStyle(
-              color: Colors.white,
-            )
-
-            ,),
-        ),
-        centerTitle: true,
-        backgroundColor: SharedColor.tealColor,
+        title: Text('Cart Payment', style: TextStyle(
+            color: Colors.white,
+            fontSize: 25.0, fontWeight: FontWeight.bold
+        )),
+        backgroundColor: SharedColor.tealColor, // Set app bar color
       ),
-      drawer:myDrawer(),
-
       body: Padding(
-        padding: const EdgeInsets.only(top:10.0),
-        child: ListView.builder(
-          itemCount: inCart.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: Card(
-                color: Colors.teal,
-                child: ListTile(
-                  title: Text(
-                    'From: ${inCart[index].trip.meetingPoint}\nTo: ${inCart[index].trip.dropPoint}',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
-
-
-                    ),
-
-                  ),
-                  leading:Text(
-                    '${inCart[index].trip.date}\n${inCart[index].trip.time}',
-                    style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14
-                    ),
-                  ) ,
-                  trailing: Text(
-                    '${inCart[index].trip.price} EGP',
-                    style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14
-                    ),
-                  ) ,
-                  onTap: () {
-                    // Handle route selection, e.g., navigate to a details page
-                    _navigateToTripDetails(inCart[index]);
-                  },
-
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  void _navigateToTripDetails(Purchase p) {
-    // Add navigation logic here, e.g., push a new page
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TripDetailsPage(p)),
-    );
-  }
-}
-
-class TripDetailsPage extends StatelessWidget {
-  final Purchase p;
-
-  String selectedPaymentOption = '';
-
-
-  TripDetailsPage(this.p);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(top:8.0),
-          child: Text('Trips Details',
-            style:
-            TextStyle(
-              color: Colors.white,
-            )
-
-            ,),
-        ),
-        centerTitle: true,
-        backgroundColor: SharedColor.tealColor,
-      ),
-      body:ListView(
-        children: [Column(
-
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            TripDetailCard(
-              title: 'Destination',
-              value: p.trip.dropPoint,
-            ),
-            SizedBox(height: 16.0),
-            TripDetailCard(
-              title: 'Pickup Point',
-              value: p.trip.meetingPoint,
-            ),
-            SizedBox(height: 16.0),
-            TripDetailCard(
-              title: 'Driver Name',
-              value: p.trip.driverName,
-            ),
-            SizedBox(height: 16.0),
-            TripDetailCard(
-              title: 'Pickup date',
-              value: p.trip.date,
-            ),
-            SizedBox(height: 16.0),
-            TripDetailCard(
-              title: 'Pickup Time',
-              value: p.trip.time.toString(),
-            ),
-
-            SizedBox(height: 16.0),
-            TripDetailCard(
-              title: 'Price',
-              value: p.trip.price.toString(),
-            ),
-
-            SizedBox(height: 10.0),
-            Center(
-              child: ElevatedButton(
-                onPressed: (){},
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                  primary: Colors.green, // Change the color according to your design
-                ),
-                child: Text(
-                  'Pay in Cash',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white
-                  ),
-                ),
-              ),
-            )
-
-          ],
-        ),]
-      ),
-    );
-  }
-
-}
-
-
-
-
-class TripDetailCard extends StatelessWidget {
-  final String title;
-  final String value;
-
-  TripDetailCard({required this.title, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.teal,
-      elevation: 3.0,
-      child: Padding(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Ride details
             Text(
-              title,
+              'Ride Details',
               style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white70
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: SharedColor.tealColor,
               ),
             ),
-            SizedBox(height: 8.0),
+            SizedBox(height: 10),
+            ListTile(
+              leading: Icon(
+                Icons.location_pin,
+                color: Colors.teal,
+              ),
+              title: Text('Pickup: ${widget.pickup}'),
+            ),
+
+            // Drop-off Location
+            ListTile(
+              leading: Icon(
+                Icons.pin_drop,
+                color: Colors.teal,
+              ),
+              title: Text('Drop-off: ${widget.dropoff}'),
+            ),
+            SizedBox(height: 20),
+
+            // Payment amount
             Text(
-              value,
+              'Payment Amount',
               style: TextStyle(
-                fontSize: 15.0,
-                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: SharedColor.tealColor,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'EGP ${widget.price}',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Payment method selection
+            Text(
+              'Select Payment Method',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: SharedColor.tealColor,
+              ),
+            ),
+            SizedBox(height: 10),
+
+            // Credit Card option
+            Card(
+              color: isCreditCardSelected ? SharedColor.tealColor : Colors.white,
+              elevation: 2.0,
+              child: ListTile(
+                title: Text(
+                  'Credit Card ending in 1234',
+                  style: TextStyle(
+                    color: isCreditCardSelected ? Colors.white : Colors.black,
+                  ),
+                ),
+                leading: Icon(
+                  Icons.credit_card,
+                  color: isCreditCardSelected ? Colors.white : SharedColor.tealColor,
+                ),
+                trailing: Checkbox(
+                  value: isCreditCardSelected,
+                  onChanged: (value) {
+                    // Implement payment method selection logic
+                    setState(() {
+                      isCreditCardSelected = value ?? false;
+                      isPaymentInCashSelected = false;
+                    });
+                  },
+                  activeColor: SharedColor.tealColor,
+                ),
+              ),
+            ),
+
+            // Cash option
+            Card(
+              color: isPaymentInCashSelected ? SharedColor.tealColor : Colors.white,
+              elevation: 2.0,
+              child: ListTile(
+                title: Text(
+                  'Payment in Cash',
+                  style: TextStyle(
+                    color: isPaymentInCashSelected ? Colors.white : Colors.black,
+                  ),
+                ),
+                leading: Icon(
+                  Icons.money,
+                  color: isPaymentInCashSelected ? Colors.white : SharedColor.tealColor,
+                ),
+                trailing: Checkbox(
+                  value: isPaymentInCashSelected,
+                  onChanged: (value) {
+                    // Implement payment method selection logic
+                    setState(() {
+                      isPaymentInCashSelected = value ?? false;
+                      isCreditCardSelected = false;
+                    });
+                  },
+                  activeColor: SharedColor.tealColor,
+                ),
+              ),
+            ),
+
+            SizedBox(height: 20),
+
+            // Payment button
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Implement payment processing logic
+                  if (isCreditCardSelected) {
+                    // Handle credit card payment
+                    print('Credit Card payment selected');
+                  } else if (isPaymentInCashSelected) {
+                    // Handle payment in cash
+                    print('Payment in Cash selected');
+                  } else {
+                    // Handle other payment methods
+                    print('Processing payment...');
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: SharedColor.tealColor,
+                  onPrimary: Colors.white,
+                    maximumSize: Size(200.0, 50.0),
+                    minimumSize: Size(200.0, 50.0)
+                ),
+                child: Text('Make Payment',style: SharedFont.whiteStyle),
               ),
             ),
           ],
@@ -224,4 +187,3 @@ class TripDetailCard extends StatelessWidget {
     );
   }
 }
-

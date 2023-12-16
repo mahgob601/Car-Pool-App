@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.only(bottom: 10.0),
               child: Card(
 
-                color: Colors.teal,
+                color: SharedColor.tealColor,
                 child: ListTile(
 
                   title: Text(

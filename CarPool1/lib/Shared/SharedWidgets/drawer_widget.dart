@@ -26,10 +26,10 @@ class _myDrawerState extends State<myDrawer> {
         // Important: Remove any padding from the ListView.
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
+          DrawerHeader(
 
             decoration: BoxDecoration(
-              color: Colors.teal,
+              color: SharedColor.tealColor,
             ),
             child: Text(''),
           ),
@@ -63,15 +63,7 @@ class _myDrawerState extends State<myDrawer> {
             },
           ),
 
-          ListTile(
-            leading: Icon(
-              Icons.shopping_cart,
-            ),
-            title: const Text('My Cart'),
-            onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {return MyCart();}));
-            },
-          ),
+
 
           ListTile(
             leading: Icon(

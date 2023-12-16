@@ -1,3 +1,4 @@
+import 'package:car_pool1/Cart.dart';
 import 'package:flutter/material.dart';
 
 import 'Shared/SharedTheme/SharedColor.dart';
@@ -35,7 +36,7 @@ class TripDetailsPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             margin: EdgeInsets.all(16),
-            color: Colors.teal,
+            color: SharedColor.tealColor,
             child: Padding(
               padding: EdgeInsets.all(30),
               child: Column(
@@ -123,7 +124,7 @@ class TripDetailsPage extends StatelessWidget {
                             minimumSize: Size(120.0, 50.0)
                         ),
                         onPressed: () {
-
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => MyCart(myTrip['Pickup'],myTrip['Dropoff'], myTrip['Offered_Price'],myTrip['Trip_ID'] )));
 
                         }
 
