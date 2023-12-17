@@ -1,3 +1,4 @@
+import 'package:car_pool1_driver/HandleRequestsPage.dart';
 import 'package:car_pool1_driver/LoginScreen.dart';
 import 'package:car_pool1_driver/OrderHistory.dart';
 import 'package:car_pool1_driver/ProfilePage.dart';
@@ -80,15 +81,16 @@ class _HomePageState extends State<HomePage> {
         title: Padding(
           padding: const EdgeInsets.only(top: 8.0),
           child: Text('My Trips',
-            style:
-            TextStyle(
+              style: TextStyle(
               color: Colors.white,
-            )
+              fontSize: 25.0, fontWeight: FontWeight.bold
+          )
+          ),
 
-            ,),
-        ),
+            ),
+
         centerTitle: true,
-        backgroundColor: SharedColor.tealColor,
+        backgroundColor: Colors.blueGrey,
       ),
       drawer: myDrawer(),
 
@@ -103,7 +105,7 @@ class _HomePageState extends State<HomePage> {
               child: Card(
 
                 color: availableTrips[index]["Booking_Status"] == 'Available'
-                    ? SharedColor.tealColor
+                    ? Colors.blueGrey
                     : Colors.orange,
                 child: ListTile(
 
@@ -150,6 +152,7 @@ class _HomePageState extends State<HomePage> {
                                 myDriverInfo[0]['ProfileImage'],
                                 myDriverInfo[0]['car_info'],
                                 myDriverInfo[0]['phone'])));*/
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HandleRequestsPage()));
                   },
                 ),
               ),

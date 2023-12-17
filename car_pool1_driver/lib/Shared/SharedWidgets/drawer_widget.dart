@@ -1,4 +1,3 @@
-import 'package:car_pool1_driver/Cart.dart';
 import 'package:car_pool1_driver/models/global_var.dart';
 import 'package:car_pool1_driver/HomePage.dart';
 import 'package:car_pool1_driver/Shared/SharedTheme/SharedColor.dart';
