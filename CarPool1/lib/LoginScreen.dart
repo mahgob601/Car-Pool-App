@@ -54,6 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   userName = (snap.snapshot.value as Map)["name"];
                   userEmail = (snap.snapshot.value as Map)["email"];
                   profileImageURL =(snap.snapshot.value as Map)["ProfileImage"];
+                  userID = (snap.snapshot.value as Map)["id"];
+                  userPhone = (snap.snapshot.value as Map)["phone"];
 
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
                 }

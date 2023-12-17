@@ -152,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                                 myDriverInfo[0]['ProfileImage'],
                                 myDriverInfo[0]['car_info'],
                                 myDriverInfo[0]['phone'])));*/
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => HandleRequestsPage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HandleRequestsPage(availableTrips[index]["Trip_ID"])));
                   },
                 ),
               ),

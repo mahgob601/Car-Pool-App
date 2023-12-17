@@ -31,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isSecured = true;
 
+  bool isLoading = false;
 
 
 
@@ -76,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
               input_field('Email Address', Icons.email, emailController, false, emailKey),
               input_field('Password', Icons.lock, passwordController, isSecured, passwordKey),
 
-              TextButton(
+              ElevatedButton(
                 child: Text('Login', style: SharedFont.whiteStyle),
                 style: TextButton.styleFrom(
                     backgroundColor: Colors.blueGrey,
@@ -84,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     maximumSize: Size(200.0, 50.0),
                     minimumSize: Size(200.0, 50.0)
                 ),
-                onPressed: () {
+                onPressed: () async {
                   if(emailController.text == 'testdriver@eng.asu.edu.eg' && passwordController.text == '123456')
                   {
                     userName = 'Test Driver';
@@ -96,7 +97,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         snack('Missing Required Fields', 3, Colors.red)
                     );
                   } else {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await Future.delayed(Duration(seconds: 3));
                     firebaseAuthClass().loginDriver(context, emailController.text, passwordController.text);
+                    setState(() {
+                      isLoading = false;
+                    });
                   }
                 },
               ),
@@ -112,7 +120,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => SignUpScreen()));
                   },
                 ),
-              )
+              ),
+              SizedBox(height: 35,),
+              (isLoading)? CircularProgressIndicator():SizedBox(height: 0,),
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:car_pool1/Shared/DBHandler/trip_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
 import 'package:car_pool1/User/purchases.dart';
@@ -160,14 +161,12 @@ class _MyCartState extends State<MyCart> {
             // Payment button
             Center(
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: ()  async{
                   // Implement payment processing logic
-                  if (isCreditCardSelected) {
+                  if (isCreditCardSelected || isPaymentInCashSelected) {
                     // Handle credit card payment
+                    await reserveTrip(widget.tripID);
                     print('Credit Card payment selected');
-                  } else if (isPaymentInCashSelected) {
-                    // Handle payment in cash
-                    print('Payment in Cash selected');
                   } else {
                     // Handle other payment methods
                     ScaffoldMessenger.of(context).showSnackBar(

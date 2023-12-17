@@ -1,23 +1,59 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 
 class HandleRequestsPage extends StatefulWidget {
+  String tripID;
+  HandleRequestsPage(this.tripID);
   @override
   _HandleRequestsPageState createState() => _HandleRequestsPageState();
 }
 
 class _HandleRequestsPageState extends State<HandleRequestsPage> {
-  List<Passenger> passengers = [
-    Passenger('Passenger 1'),
-    Passenger('Passenger 2'),
-    Passenger('Passenger 3'),
-    // Add more passengers as needed
-  ];
+
+  late List<dynamic> userRequests = [];
+
+
 
   String tripStatus = 'Pending'; // Default trip status
 
   @override
+  void initState()
+  {
+    DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}/UserRequests/");
+    fetchRequests(userRequestsRef);
+  }
+
+  fetchRequests(DatabaseReference userRequestsRef) async {
+    userRequestsRef.onValue.listen((event) {
+      if (event.snapshot.exists) {
+        userRequests.clear();
+        Map <dynamic,dynamic> requestVals;
+        event.snapshot.children.forEach((child) {
+
+          requestVals = child.value as Map;
+          userRequests.add(requestVals);
+
+          //print(availableTrips);
+        });
+
+
+        setState(() {
+        });
+      }
+      else {
+        userRequests.clear();
+      }
+    }, onError: (error) {
+      print("error retrieving!");
+    });
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
+    //fetchRequests();
     return Scaffold(
       appBar: AppBar(
         title: Padding(
@@ -50,14 +86,14 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
           // Passenger list
           Expanded(
             child: ListView.builder(
-              itemCount: passengers.length,
+              itemCount: userRequests.length,
               itemBuilder: (context, index) {
                 return Card(
 
                   child: ListTile(
-                    title: Text(passengers[index].name, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                    title: Text('${userRequests[index]['name']}\n${userRequests[index]['phone']}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
                     
-                    subtitle: Text('Status: ${passengers[index].status}'),
+                    subtitle: Text('Status: ${userRequests[index]['Request_Status']}}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -65,14 +101,14 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
                           icon: Icon(Icons.check, color: Colors.green),
                           onPressed: () {
                             // Handle accept action
-                            _handleAcceptPassenger(passengers[index]);
+                            _handleAcceptPassenger(userRequests[index]['User_ID']);
                           },
                         ),
                         IconButton(
                           icon: Icon(Icons.close, color: Colors.red),
                           onPressed: () {
                             // Handle reject action
-                            _handleRejectPassenger(passengers[index]);
+                            _handleRejectPassenger(userRequests[index]['User_ID']);
                           },
                         ),
                       ],
@@ -82,12 +118,14 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
               },
             ),
           ),
+
           // Trip status buttons
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+
                 ElevatedButton(
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.cyan,
@@ -100,7 +138,11 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
                 ElevatedButton(
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.green,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0),
+
+                      )),
+
+
                   onPressed: () {
                     _changeTripStatus('Completed');
                   },
@@ -110,12 +152,13 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))),
-
                   onPressed: () {
                     _changeTripStatus('Cancelled');
                   },
-                  child: Text('Cancel', style: TextStyle(color: Colors.white),),
+                  child: Text('Cancel', style: TextStyle(color: Colors.white)),
                 ),
+
+
               ],
             ),
           ),
@@ -124,17 +167,25 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
     );
   }
 
-  void _handleAcceptPassenger(Passenger passenger) {
+  void _handleAcceptPassenger(String userID) async{
     // Implement logic to accept the passenger
-    passenger.status = 'Accepted';
-    print('Accepted ${passenger.name}');
+    DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}/UserRequests/");
+    await userRequestsRef.child(userID).update({
+      'Request_Status':'Accepted'
+    });
+    
+    print('Accepted ${userID}');
     setState(() {});
   }
 
-  void _handleRejectPassenger(Passenger passenger) {
+  void _handleRejectPassenger(String userID) async{
     // Implement logic to reject the passenger
-    passenger.status = 'Rejected';
-    print('Rejected ${passenger.name}');
+    DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}/UserRequests/");
+    await userRequestsRef.child(userID).update({
+      'Request_Status':'Rejected'
+    });
+
+    print('Accepted ${userID}');
     setState(() {});
   }
 
@@ -146,9 +197,3 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
   }
 }
 
-class Passenger {
-  final String name;
-  String status;
-
-  Passenger(this.name, {this.status = 'Pending'});
-}

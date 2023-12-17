@@ -184,7 +184,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                   else {
                     print(selectedDate.toString().split(' ')[0].split('-')[2]);
 
-                    TripControllerClass().addTrip(context, Trip(userID, pickupPointController.text.trim(), selectedDropoff, selectedDate.toString().split(' ')[0], selectedValue, offeredPriceController.text, 'Available',0, 'Not Started'));
+                    TripControllerClass().addTrip(context, Trip(userID, pickupPointController.text.trim(), selectedDropoff, selectedDate.toString().split(' ')[0], selectedValue, offeredPriceController.text, 'Available',0, 'Pending'));
 
                   }
                 },
@@ -305,7 +305,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                   }
                   else
                     {
-                      TripControllerClass().addTrip(context, Trip(userID, selectedPickup, destinationPointController.text.trim(), selectedDate.toString().split(' ')[0], selectedValue, offeredPriceController.text,'Available',0, 'Not Started'));
+                      TripControllerClass().addTrip(context, Trip(userID, selectedPickup, destinationPointController.text.trim(), selectedDate.toString().split(' ')[0], selectedValue, offeredPriceController.text,'Available',0, 'Pending'));
                     }
 
                 },

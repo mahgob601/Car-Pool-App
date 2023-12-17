@@ -75,6 +75,7 @@ class firebaseAuthClass{
             userName = (snap.snapshot.value as Map)["name"];
             userEmail = (snap.snapshot.value as Map)["email"];
             userID = (snap.snapshot.value as Map)["id"];
+            userPhone = (snap.snapshot.value as Map)["phone"];
             profileImageURL = (snap.snapshot.value as Map)["ProfileImage"];
           }
         }

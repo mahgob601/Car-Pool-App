@@ -75,6 +75,8 @@ class _myDrawerState extends State<myDrawer> {
             onTap: () async {
               userName = '';
               userEmail = '';
+              userPhone = "";
+              userID = "";
               profileImageURL = '';
               tempProfileImage =null;
               await FirebaseAuth.instance.signOut();
