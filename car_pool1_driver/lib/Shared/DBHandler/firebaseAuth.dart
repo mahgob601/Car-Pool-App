@@ -26,7 +26,7 @@ class firebaseAuthClass{
 
     if(userFirebase != null)
     {
-      DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("drivers").child(userFirebase.uid);
+      DatabaseReference usersRef = await FirebaseDatabase.instance.ref().child("drivers").child(userFirebase.uid);
       usersRef.once().then((snap) {
         if(snap.snapshot.value != null)
         {

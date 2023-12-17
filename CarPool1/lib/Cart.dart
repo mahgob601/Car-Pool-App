@@ -165,7 +165,7 @@ class _MyCartState extends State<MyCart> {
                   // Implement payment processing logic
                   if (isCreditCardSelected || isPaymentInCashSelected) {
                     // Handle credit card payment
-                    await reserveTrip(widget.tripID);
+                    await TripController().reserveTrip(widget.tripID);
                     print('Credit Card payment selected');
                   } else {
                     // Handle other payment methods

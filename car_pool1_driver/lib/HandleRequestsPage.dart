@@ -1,6 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import 'Shared/SharedWidgets/snack_widget.dart';
+
 
 class HandleRequestsPage extends StatefulWidget {
   String tripID;
@@ -20,9 +22,12 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
   @override
   void initState()
   {
-    DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}/UserRequests/");
-    fetchRequests(userRequestsRef);
+    DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}");
+    fetchRequests(userRequestsRef.child('UserRequests'));
+    super.initState();
   }
+
+
 
   fetchRequests(DatabaseReference userRequestsRef) async {
     userRequestsRef.onValue.listen((event) {
@@ -92,8 +97,13 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
 
                   child: ListTile(
                     title: Text('${userRequests[index]['name']}\n${userRequests[index]['phone']}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-                    
-                    subtitle: Text('Status: ${userRequests[index]['Request_Status']}}'),
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(userRequests[index]['userProfileImage']), // Replace with driver image URL
+                      radius: 30,
+                    ),
+                    subtitle: Text('Status: ${userRequests[index]['Request_Status']}' ,style: TextStyle(
+                      color: userRequests[index]['Request_Status'] == 'Accepted' ? Colors.green[900] : Colors.orange
+                    ),),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -169,10 +179,48 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
 
   void _handleAcceptPassenger(String userID) async{
     // Implement logic to accept the passenger
-    DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}/UserRequests/");
-    await userRequestsRef.child(userID).update({
-      'Request_Status':'Accepted'
+    DatabaseReference tripRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}");
+    tripRef.once().then((snap) async {
+      if (snap.snapshot.value != null) {
+        int noPass = (snap.snapshot.value as Map)["Passengers"];
+        if(noPass+1 == 3)
+        {
+          await tripRef.update({
+            'Passengers': noPass + 1
+          });
+          await tripRef.child('UserRequests/$userID').update({
+            'Request_Status':'Accepted'
+          });
+          await tripRef.update({
+            'Booking_Status': 'Booked'
+          });
+
+
+        }
+        else if(noPass+1 < 3)
+          {
+            await tripRef.update({
+              'Passengers': noPass + 1
+            });
+            await tripRef.child('UserRequests/$userID').update({
+              'Request_Status':'Accepted'
+            });
+          }
+        else
+          {
+            ScaffoldMessenger.of(context).showSnackBar(snack("Cannot accept more than 3 clients for a ride", 3, Colors.red));
+            await tripRef.child('UserRequests/$userID').update({
+              'Request_Status':'Rejected'
+            });
+          }
+      }
     });
+
+
+
+
+
+
     
     print('Accepted ${userID}');
     setState(() {});
