@@ -1,5 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:car_pool1_driver/firebase_options.dart';
+
 
 import 'Shared/SharedWidgets/snack_widget.dart';
 
@@ -37,7 +40,11 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
         event.snapshot.children.forEach((child) {
 
           requestVals = child.value as Map;
-          userRequests.add(requestVals);
+          if(requestVals['Request_Status'] != 'Rejected')
+            {
+              userRequests.add(requestVals);
+            }
+
 
           //print(availableTrips);
         });
@@ -95,7 +102,22 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
               itemBuilder: (context, index) {
                 return Card(
 
-                  child: ListTile(
+                  child: userRequests[index]['Request_Status'] != 'Pending' ?Container(
+                    color: userRequests[index]['Request_Status'] == 'Accepted' ? Colors.green : Colors.red,
+                    child: ListTile(
+
+
+                      title: Text('${userRequests[index]['name']}\n${userRequests[index]['phone']}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(userRequests[index]['userProfileImage']), // Replace with driver image URL
+                        radius: 30,
+                      ),
+                      subtitle: Text('Status: ${userRequests[index]['Request_Status']}' ,style: TextStyle(
+                          color: userRequests[index]['Request_Status'] == 'Accepted' ? Colors.white : Colors.white70
+                      ),),
+
+                    ),
+                  ) : ListTile(
                     title: Text('${userRequests[index]['name']}\n${userRequests[index]['phone']}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
                     leading: CircleAvatar(
                       backgroundImage: NetworkImage(userRequests[index]['userProfileImage']), // Replace with driver image URL
@@ -169,6 +191,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
                 ),
 
 
+
               ],
             ),
           ),
@@ -178,12 +201,20 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
   }
 
   void _handleAcceptPassenger(String userID) async{
+    var database = await FirebaseDatabase.instance
+        .ref()
+        .child("Trips/${widget.tripID}/UserRequests")
+        .once();
+
+    // hena
+
+
     // Implement logic to accept the passenger
     DatabaseReference tripRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}");
     tripRef.once().then((snap) async {
       if (snap.snapshot.value != null) {
         int noPass = (snap.snapshot.value as Map)["Passengers"];
-        if(noPass+1 == 3)
+        if(noPass+1 == 2)
         {
           await tripRef.update({
             'Passengers': noPass + 1
@@ -195,9 +226,33 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
             'Booking_Status': 'Booked'
           });
 
+          Map<dynamic,dynamic> myreqs = await database.snapshot.value as Map;
+          late List pendingUsers = [];
+          myreqs.forEach((key, value) {
+            if(value['Request_Status'] == 'Pending' && key.toString() != userID)
+            {
+              pendingUsers.add(key.toString());
+            }
+          });
+
+          for(String i in pendingUsers)
+            {
+              await tripRef.child('UserRequests/${i}').update({
+                'Request_Status':'Rejected'
+              });
+
+            }
+
+          /*print(myreqs);
+          print('lol');
+          print(pendingUsers);*/
+          //hena
+
+
+
 
         }
-        else if(noPass+1 < 3)
+        else if(noPass+1 < 2)
           {
             await tripRef.update({
               'Passengers': noPass + 1
@@ -222,7 +277,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
 
 
     
-    print('Accepted ${userID}');
+    //print('Accepted ${userID}');
     setState(() {});
   }
 
@@ -237,7 +292,11 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
     setState(() {});
   }
 
-  void _changeTripStatus(String newStatus) {
+  void _changeTripStatus(String newStatus) async{
+    DatabaseReference tripRef =  FirebaseDatabase.instance.ref("Trips/${widget.tripID}/");
+    tripRef.update({
+      'Ride_Status':newStatus,
+    });
     // Implement logic to change trip status
     setState(() {
       tripStatus = newStatus;
