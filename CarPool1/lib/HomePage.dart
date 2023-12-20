@@ -1,102 +1,66 @@
+import 'package:car_pool1/Globals/global_var.dart';
 import 'package:car_pool1/LoginScreen.dart';
 import 'package:car_pool1/OrderHistory.dart';
 import 'package:car_pool1/ProfilePage.dart';
+import 'package:car_pool1/Shared/DBHandler/trip_controller.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
 import 'package:car_pool1/Shared/SharedWidgets/drawer_widget.dart';
+import 'package:car_pool1/Shared/DBHandler/trip_controller.dart';
 import 'package:car_pool1/trips/trip.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'tripDetails.dart';
-
+import 'Globals/tip_globals.dart';
 import 'Shared/SharedTheme/SharedFont.dart';
 
+
 class HomePage extends StatefulWidget {
+
   @override
   _HomePageState createState() => _HomePageState();
+
+  static void updateState() {
+    _HomePageState? currentState = _HomePageState.currentState;
+    if (currentState != null) {
+      currentState.updateState();
+    }
+  }
 }
 
 class _HomePageState extends State<HomePage> {
-  void initState() {
-    print(DateTime.now());
+  static _HomePageState? currentState;
+  TripController TC = TripController();
+
+  void state() {
+    setState((){});
+  }
+  void initState(){
+    //print(DateTime.now());
+    TC.fetchAllTrips();
     super.initState();
+    currentState = this;
     // Simulate fetching data from a database
     //_fetchRideRequests();
   }
-  late List<dynamic> availableTrips = [];
-  late List<dynamic> myDriverInfo = [];
 
-  DatabaseReference tripsRef = FirebaseDatabase.instance.ref("Trips/");
 
-  final Map<String, String> monthToCapital = {
-    '01': 'JAN',
-    '02': 'FEB',
-    '03': 'MAR',
-    '04': 'APR',
-    '05': 'MAY',
-    '06': 'JUN',
-    '07': 'JUL',
-    '08': 'AUG',
-    '09': 'SEP',
-    '10': 'OCT',
-    '11': 'NOV',
-    '12': 'DEC',
-  };
+  @override
+  void dispose() {
+    currentState = null;
+    super.dispose();
+  }
 
-  fetchDriverData(String driverID) async {
-    DatabaseReference driverInfoRef = FirebaseDatabase.instance.ref("drivers");
-    final snapshot = await driverInfoRef.child('${driverID}').get();
-    if (snapshot.exists) {
-      myDriverInfo.clear();
-      myDriverInfo.add(snapshot.value);
-      print(snapshot.value);
-    }
-    else {
-      myDriverInfo.clear();
-      print('no dattttttta!!!');
-    }
+  void updateState() {
+    setState(() {
+
+    });
   }
 
 
   @override
   Widget build(BuildContext context) {
-    tripsRef.onValue.listen((event) {
-      if (event.snapshot.exists) {
-        availableTrips.clear();
-        event.snapshot.children.forEach((child) {
-          availableTrips.add(child.value);
-          //print(availableTrips);
-        });
-        availableTrips.map((e) => e);
-        availableTrips = availableTrips.where((theTrip) {
-          DateTime tripDate = DateTime.parse(theTrip['Date']);
-          print(tripDate);
-          DateTime reservationTime;
 
-          DateTime now = DateTime.now();
-
-          if (theTrip['Time'] == "7.30 AM") {
-            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 22, 44, 0).subtract(Duration(days: 1)); // 10:00 pm previous day
-          } else {
-            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 9, 5, 0); // 1:00 pm same day
-          }
-
-          // Return true if the current time is before the reservation time
-          return now.isBefore(reservationTime);
-        }).toList();
-
-
-
-
-        setState(() {
-
-        });
-      }
-      else {
-        availableTrips.clear();
-      }
-    }, onError: (error) {
-      print("error retrieving!");
-    });
+    TC.fetchAllTrips();
     return Scaffold(
       appBar: AppBar(
         title: Padding(
@@ -159,11 +123,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   onTap: () async {
                     //List<dynamic> driverInfo;
-                    await fetchDriverData(availableTrips[index]['Driver_ID']);
-                    //print(myDriverInfo[0]['name']);
-                    // Handle route selection, e.g., navigate to a details page
-                    /*_navigateToTripDetails(availableTrips[index], myDriverInfo[0]['name'], myDriverInfo[0]['ProfileImage'],
-                        myDriverInfo[0]['car_info'], myDriverInfo[0]['phone']);*/
+                    await TC.fetchDriverData(availableTrips[index]['Driver_ID']);
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) =>
                             TripDetailsPage(

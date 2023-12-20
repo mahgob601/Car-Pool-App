@@ -1,3 +1,5 @@
+import 'package:car_pool1/HomePage.dart';
+import 'package:car_pool1/OrderHistory.dart';
 import 'package:car_pool1/Shared/DBHandler/trip_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
@@ -163,7 +165,11 @@ class _MyCartState extends State<MyCart> {
                   // Implement payment processing logic
                   if (isCreditCardSelected || isPaymentInCashSelected) {
                     // Handle credit card payment
-                    await TripController().reserveTrip(widget.tripID);
+                    await TripController().reserveTrip(widget.tripID,context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        snack('Trip reserved, review your order history !!', 3, Colors.green)
+                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
                     print('Credit Card payment selected');
                   } else {
                     // Handle other payment methods

@@ -37,14 +37,33 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
       if (event.snapshot.exists) {
         userRequests.clear();
         Map <dynamic,dynamic> requestVals;
+        Map <dynamic,dynamic> requestValsIndex;
         event.snapshot.children.forEach((child) {
 
+
           requestVals = child.value as Map;
+          requestValsIndex = child.key as Map;
+          print(requestValsIndex[child.key]);
           if(requestVals['Request_Status'] != 'Rejected')
             {
               userRequests.add(requestVals);
             }
 
+          /*DateTime tripDate = DateTime.parse(theTrip['Date']);
+          print(tripDate);
+          DateTime reservationTime;
+
+          DateTime now = DateTime.now();
+
+          if (theTrip['Time'] == "7.30 AM") {
+            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 22, 0, 0).subtract(Duration(days: 1)); // 10:00 pm previous day
+          } else {
+            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 13, 0, 0); // 1:00 pm same day
+          }
+
+          // Return true if the current time is before the reservation time
+          return now.isBefore(reservationTime);
+*/
 
           //print(availableTrips);
         });

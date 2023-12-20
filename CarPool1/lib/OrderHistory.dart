@@ -2,15 +2,13 @@ import 'package:car_pool1/Shared/SharedWidgets/drawer_widget.dart';
 
 import 'package:car_pool1/trips/trip.dart';
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'Globals/global_var.dart';
-import 'LoginScreen.dart';
-import 'ProfilePage.dart';
+import 'Globals/tip_globals.dart';
 import 'Shared/SharedTheme/SharedColor.dart';
 
+Map<dynamic,dynamic> myInd ={};
 class OrderHistory extends StatefulWidget {
   const OrderHistory({super.key});
 
@@ -19,7 +17,7 @@ class OrderHistory extends StatefulWidget {
 }
 
 class _OrderHistoryState extends State<OrderHistory> {
-  DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/");
+
    List<MyTrip> myOrderHistory=[];
 
   Map<dynamic,dynamic> myTrip = {};
@@ -27,44 +25,73 @@ class _OrderHistoryState extends State<OrderHistory> {
   void initState()
   {
 
-    fetchRequestAndRideStatusChanges(/*userRequestsRef.child('UserRequests')*/);
+    fetchRequestAndRideStatusChanges();
     super.initState();
   }
 
 
 
-  fetchRequestAndRideStatusChanges(/*DatabaseReference userRequestsRef*/) async {
-    userRequestsRef.once().then((snap){
+  fetchRequestAndRideStatusChanges() async {
+    userRequestsRef.onValue.listen((snap){
       if(snap.snapshot.value != null)
         {
           myOrderHistory.clear();
-          snap.snapshot.children.forEach((child) {
+          snap.snapshot.children.forEach((child) async {
 
             myTrip = child.value as Map;
-            if(myTrip['UserRequests'].keys.toList().contains(userID))
+
+            //var check = await userRequestsRef.child(child.key!).child(userID).once();
+            //myInd = check.snapshot.value as Map;
+
+           /* if(check.snapshot.exists)
               {
+                print(myTrip['Pickup'].toString());
                 MyTrip trip = MyTrip(driverName: myTrip['Driver_Name'].toString(), driverNumber: myTrip['Driver_Number'].toString(),
                     driverProfileURL: myTrip['Driver_Profile'].toString()
                     , meetingPoint: myTrip['Pickup'].toString(), myRequestStatus: myTrip['UserRequests'][userID]['Request_Status'],
                     tripRideStatus: myTrip['Ride_Status'].toString()
                     , dropPoint: myTrip['Dropoff'].toString(), date: myTrip['Date'].toString(),
                     price: double.parse(myTrip['Offered_Price']), time: myTrip['Time'].toString());
-                /*MyTrip thisTrip = MyTrip(driverName: 'driverName', driverNumber: 'driverNumber',
-                    driverProfileURL: 'driverProfileURL', meetingPoint: 'meetingPoint',
-                    myRequestStatus: 'myRequestStatus', tripRideStatus: 'tripRideStatus',
-                    dropPoint: 'dropPoint', date: 'date', price: 11.9, time: 'time');*/
-                myOrderHistory.add(trip);
-                //print(myTrip['Offered_Price'].toString());
-                //print(myTrip['UserRequests'][userID]['Request_Status']);
-                setState(() {
 
-                });
+                myOrderHistory.add(trip);
+              }*//* if(check.snapshot.exists)
+              {
+                print(myTrip['Pickup'].toString());
+                MyTrip trip = MyTrip(driverName: myTrip['Driver_Name'].toString(), driverNumber: myTrip['Driver_Number'].toString(),
+                    driverProfileURL: myTrip['Driver_Profile'].toString()
+                    , meetingPoint: myTrip['Pickup'].toString(), myRequestStatus: myTrip['UserRequests'][userID]['Request_Status'],
+                    tripRideStatus: myTrip['Ride_Status'].toString()
+                    , dropPoint: myTrip['Dropoff'].toString(), date: myTrip['Date'].toString(),
+                    price: double.parse(myTrip['Offered_Price']), time: myTrip['Time'].toString());
+
+                myOrderHistory.add(trip);
+              }*/
+           if(myTrip['UserRequests'].keys.toList().contains(userID))
+              {
+                print(myTrip['Pickup'].toString());
+                MyTrip trip = MyTrip(driverName: myTrip['Driver_Name'].toString(), driverNumber: myTrip['Driver_Number'].toString(),
+                    driverProfileURL: myTrip['Driver_Profile'].toString()
+                    , meetingPoint: myTrip['Pickup'].toString(), myRequestStatus: myTrip['UserRequests'][userID]['Request_Status'],
+                    tripRideStatus: myTrip['Ride_Status'].toString()
+                    , dropPoint: myTrip['Dropoff'].toString(), date: myTrip['Date'].toString(),
+                    price: double.parse(myTrip['Offered_Price']), time: myTrip['Time'].toString());
+
+                myOrderHistory.add(trip);
+
 
               }
 
-            print(myOrderHistory.length);
+            setState(() {
+
+            });
+
+            //print(myOrderHistory.length);
 
           });
+          setState(() {
+
+          });
+
 
         }
       else {
@@ -120,6 +147,11 @@ class _OrderHistoryState extends State<OrderHistory> {
                     ),
                   ),
                   SizedBox(height: 8),
+                  Text(
+                    'Pickup: ${myOrderHistory[index].meetingPoint}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 8,),
                   Text(
                     'Destination: ${myOrderHistory[index].dropPoint}',
                     style: TextStyle(fontSize: 16),
