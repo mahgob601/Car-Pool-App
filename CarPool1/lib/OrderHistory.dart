@@ -144,6 +144,7 @@ class _OrderHistoryState extends State<OrderHistory> {
         itemCount: myOrderHistory.length,
         itemBuilder: (context, index) {
           return Card(
+
             elevation: 5,
             margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             child: Padding(
@@ -183,6 +184,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                           : Colors.red,
                     ),
                   ),
+                  myOrderHistory[index].myRequestStatus == 'Accepted'?
                   Text(
                     'Trip Status: ${myOrderHistory[index].tripRideStatus}',
                     style: TextStyle(
@@ -193,7 +195,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                           ? Colors.orange
                           : Colors.red,
                     ),
-                  ),
+                  ) : SizedBox(height: 0,),
                   Text(
                     'Pickup Time: ${myOrderHistory[index].time}',
                     style: TextStyle(fontSize: 16),
@@ -202,10 +204,11 @@ class _OrderHistoryState extends State<OrderHistory> {
                     'Driver: ${myOrderHistory[index].driverName}',
                     style: TextStyle(fontSize: 16),
                   ),
+                  myOrderHistory[index].myRequestStatus == 'Accepted'?
                   Text(
                     'Driver Phone: ${myOrderHistory[index].driverNumber}',
                     style: TextStyle(fontSize: 16),
-                  ),
+                  ):SizedBox(height: 0,)
                 ],
               ),
             ),
