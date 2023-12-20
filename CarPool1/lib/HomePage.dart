@@ -4,7 +4,6 @@ import 'package:car_pool1/ProfilePage.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
 import 'package:car_pool1/Shared/SharedWidgets/drawer_widget.dart';
 import 'package:car_pool1/trips/trip.dart';
-import 'package:car_pool1/trips/trip_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'tripDetails.dart';

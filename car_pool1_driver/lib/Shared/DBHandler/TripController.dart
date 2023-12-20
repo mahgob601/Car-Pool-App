@@ -1,4 +1,5 @@
 import 'package:car_pool1_driver/Shared/DBHandler/firebaseAuth.dart';
+import 'package:car_pool1_driver/models/global_var.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,6 +23,9 @@ class TripControllerClass{
       "Booking_Status": trip.bookingStatus,
       "Passengers": trip.passengers,
       "Ride_Status": trip.rideStatus,
+      'Driver_Name': userName,
+      'Driver_Profile': profileImageURL,
+      'Driver_Number': driverNumber,
 
 
     };

@@ -3,12 +3,14 @@ import 'package:car_pool1/Globals/global_var.dart';
 import 'package:car_pool1/HomePage.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
 import 'package:car_pool1/TrackDriverScreen.dart';
+import 'package:car_pool1/trialScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../LoginScreen.dart';
 import '../../OrderHistory.dart';
 import '../../ProfilePage.dart';
+
 
 class myDrawer extends StatefulWidget {
   const myDrawer({super.key});
@@ -55,6 +57,15 @@ class _myDrawerState extends State<myDrawer> {
           ),
 
 
+          ListTile(
+            leading: Icon(
+              Icons.history,
+            ),
+            title: const Text('Ob'),
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {return OrderHistoryScreen();}));
+            },
+          ),
 
 
           ListTile(
@@ -66,6 +77,7 @@ class _myDrawerState extends State<myDrawer> {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {return OrderHistory();}));
             },
           ),
+
 
           ListTile(
             leading: Icon(

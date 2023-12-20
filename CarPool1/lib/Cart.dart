@@ -1,8 +1,6 @@
 import 'package:car_pool1/Shared/DBHandler/trip_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
-import 'package:car_pool1/User/purchases.dart';
-import 'package:car_pool1/User/purchases_preferences.dart';
 import 'package:car_pool1/Shared/SharedWidgets/drawer_widget.dart';
 import 'package:intl/intl.dart';
 

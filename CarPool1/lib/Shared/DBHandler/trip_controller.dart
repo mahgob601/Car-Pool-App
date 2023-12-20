@@ -8,6 +8,7 @@ class TripController
 {
 reserveTrip(String TripID) async{
   DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/${TripID}/UserRequests/$userID");
+  DatabaseReference userTripRelationRef = FirebaseDatabase.instance.ref("UserTrips/$userID");
 
   await userRequestsRef.set({
     'User_ID': userID,
@@ -17,7 +18,23 @@ reserveTrip(String TripID) async{
     'phone': userPhone,
   });
 
+  /*await userTripRelationRef.set({
+    '$TripID':TripID
+  });*/
 
+
+
+  }
+
+  checkIfTripAlreadyReserved(String TripID) async
+  {
+    DatabaseReference myRequestRef = FirebaseDatabase.instance.ref("Trips/${TripID}/UserRequests/$userID");
+    myRequestRef.once().then((snap) async {
+      if (snap.snapshot.value != null) {
+
+
+      }
+  });
 
   }
       }

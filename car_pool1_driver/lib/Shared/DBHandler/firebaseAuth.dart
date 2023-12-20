@@ -1,5 +1,3 @@
-
-
 import 'package:car_pool1_driver/HomePage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +35,7 @@ class firebaseAuthClass{
             userID = (snap.snapshot.value as Map)["id"];
 
             profileImageURL =(snap.snapshot.value as Map)["ProfileImage"];
+            driverNumber = (snap.snapshot.value as Map)["phone"];
 
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
           }
@@ -76,6 +75,7 @@ class firebaseAuthClass{
               userEmail = (snap.snapshot.value as Map)["email"];
               userID = (snap.snapshot.value as Map)["id"];
               profileImageURL = (snap.snapshot.value as Map)["ProfileImage"];
+              driverNumber = (snap.snapshot.value as Map)["phone"];
             }
           }
         });

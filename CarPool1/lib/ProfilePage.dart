@@ -1,7 +1,7 @@
 import 'package:car_pool1/Globals/global_var.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
 import 'package:car_pool1/Shared/SharedWidgets/drawer_widget.dart';
-import 'package:car_pool1/User/user_preferences.dart';
+
 import 'package:car_pool1/edit_profile_page.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +18,7 @@ class MyProfile extends StatefulWidget {
 class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
-    final user = UserPreferences.myUser;
+
     return Scaffold(
       appBar: AppBar(
         title: Padding(

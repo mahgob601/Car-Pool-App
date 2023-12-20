@@ -11,3 +11,4 @@ String defaultProfileImagePath = "https://upload.wikimedia.org/wikipedia/commons
 Uint8List? tempProfileImage;
 Uint8List? profileImage;
 String profileImageURL = "";
+String driverNumber = "";

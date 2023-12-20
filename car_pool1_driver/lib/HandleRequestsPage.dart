@@ -288,7 +288,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
       'Request_Status':'Rejected'
     });
 
-    print('Accepted ${userID}');
+    print('Rejected ${userID}');
     setState(() {});
   }
 
