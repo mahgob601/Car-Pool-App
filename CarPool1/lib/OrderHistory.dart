@@ -41,7 +41,6 @@ class _OrderHistoryState extends State<OrderHistory> {
           snap.snapshot.children.forEach((child) {
 
             myTrip = child.value as Map;
-            //myTripsKeys = child.key as  Map;
             if(myTrip['UserRequests'].keys.toList().contains(userID))
               {
                 MyTrip trip = MyTrip(driverName: myTrip['Driver_Name'].toString(), driverNumber: myTrip['Driver_Number'].toString(),
@@ -64,21 +63,6 @@ class _OrderHistoryState extends State<OrderHistory> {
               }
 
             print(myOrderHistory.length);
-            /*print(myTrip['UserRequests'].keys.toList().contains(userID));
-            print(myTrip['Driver_Name']);*/
-            //print(myTrip['Pickup']);
-
-            /*for(String i in myTrips['UserRequests'].keys)
-              {
-                print(i);
-              }*/
-
-            //print('lola');
-            /*myTrips['UserRequests'].keys.where((k)=>{k.toString() == userID})*/
-            
-
-            //print(myTrips['UserRequests']);
-
 
           });
 
@@ -90,32 +74,7 @@ class _OrderHistoryState extends State<OrderHistory> {
       print("error retrieving!");
 
     });
-    /*userRequestsRef.onValue.listen((event) {
-      if (event.snapshot.exists) {
-        userRequests.clear();
-        Map <dynamic,dynamic> requestVals;
-        event.snapshot.children.forEach((child) {
 
-          requestVals = child.value as Map;
-          if(requestVals['Request_Status'] != 'Rejected')
-          {
-            userRequests.add(requestVals);
-          }
-
-
-          //print(availableTrips);
-        });
-
-
-        setState(() {
-        });
-      }
-      else {
-        userRequests.clear();
-      }
-    }, onError: (error) {
-      print("error retrieving!");
-    });*/
   }
 
 
