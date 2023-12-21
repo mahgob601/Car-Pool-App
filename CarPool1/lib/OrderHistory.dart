@@ -69,9 +69,11 @@ class _OrderHistoryState extends State<OrderHistory> {
            if(myTrip['UserRequests'].keys.toList().contains(userID))
               {
                 print(myTrip['Pickup'].toString());
-                MyTrip trip = MyTrip(driverName: myTrip['Driver_Name'].toString(), driverNumber: myTrip['Driver_Number'].toString(),
+                MyTrip trip = MyTrip(driverName: myTrip['Driver_Name'].toString(),
+                    driverNumber: myTrip['Driver_Number'].toString(),
                     driverProfileURL: myTrip['Driver_Profile'].toString()
-                    , meetingPoint: myTrip['Pickup'].toString(), myRequestStatus: myTrip['UserRequests'][userID]['Request_Status'],
+                    , meetingPoint: myTrip['Pickup'].toString(),
+                    myRequestStatus: myTrip['UserRequests'][userID]['Request_Status'],
                     tripRideStatus: myTrip['Ride_Status'].toString()
                     , dropPoint: myTrip['Dropoff'].toString(), date: myTrip['Date'].toString(),
                     price: double.parse(myTrip['Offered_Price']), time: myTrip['Time'].toString());

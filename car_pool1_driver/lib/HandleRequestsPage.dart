@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:car_pool1_driver/models/global_var.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,7 +19,10 @@ class HandleRequestsPage extends StatefulWidget {
 
 class _HandleRequestsPageState extends State<HandleRequestsPage> {
 
-  late List<dynamic> userRequests = [];
+  Map<String,String> userRequests = {};
+  List<Map<String,String>> thisTripInfo = [];
+  List<Map<String,String>> currentRequests=[];
+  bool timeConstraintsFlag = true;
 
 
 
@@ -26,54 +32,155 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
   void initState()
   {
     DatabaseReference userRequestsRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}");
-    fetchRequests(userRequestsRef.child('UserRequests'));
+    fetchRequests(userRequestsRef);
     super.initState();
   }
 
 
 
   fetchRequests(DatabaseReference userRequestsRef) async {
-    userRequestsRef.onValue.listen((event) {
+    Map<dynamic,dynamic> myVals = {};
+
+    List<String> overdueRequests = [];
+    userRequestsRef.onValue.listen((event) async {
       if (event.snapshot.exists) {
-        userRequests.clear();
-        Map <dynamic,dynamic> requestVals;
-        Map <dynamic,dynamic> requestValsIndex;
-        event.snapshot.children.forEach((child) {
+        print('checkkkkking');
+
+        //Map <dynamic,dynamic> requestVals;
+        //Map <dynamic,dynamic> requestValsIndex;
+        //event.snapshot.
+        //thisTripInfo = event.snapshot.value as Map;
 
 
-          requestVals = child.value as Map;
-          requestValsIndex = child.key as Map;
-          print(requestValsIndex[child.key]);
-          if(requestVals['Request_Status'] != 'Rejected')
-            {
-              userRequests.add(requestVals);
-            }
+        final thisTripInfo = Map<String, dynamic>.from(event.snapshot.value as Map<dynamic, dynamic>);
 
-          /*DateTime tripDate = DateTime.parse(theTrip['Date']);
+        //userRequests = jsonDecode(thisTripInfo['UserRequests']);
+        print(thisTripInfo['UserRequests'].keys.toList());
+        currentRequests.clear();
+
+        for(String key in thisTripInfo['UserRequests'].keys.toList())
+          {
+            print('${thisTripInfo['UserRequests'][key]['User_ID']} ${thisTripInfo['UserRequests'][key]['Request_Status']}');
+            userRequests = {'Request_Status':'${thisTripInfo['UserRequests'][key]['Request_Status']}','User_ID':'${thisTripInfo['UserRequests'][key]['User_ID']}',
+              'name':'${thisTripInfo['UserRequests'][key]['name']}', 'phone':'${thisTripInfo['UserRequests'][key]['phone']}',
+              'userProfileImage':'${thisTripInfo['UserRequests'][key]['userProfileImage']}'
+            };
+            if(thisTripInfo['UserRequests'][key]['Request_Status'] != 'Rejected'){
+              currentRequests.add(userRequests);
+
+                }
+          }
+        if (timeConstraintsFlag) {
+          DateTime tripDate = DateTime.parse(thisTripInfo['Date']);
           print(tripDate);
           DateTime reservationTime;
-
           DateTime now = DateTime.now();
-
-          if (theTrip['Time'] == "7.30 AM") {
-            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 22, 0, 0).subtract(Duration(days: 1)); // 10:00 pm previous day
+          print(thisTripInfo['Time']);
+          if (thisTripInfo['Time'] == "7.30 AM") {
+            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 23, 30, 0).subtract(Duration(days: 1)); // 11:30 pm previous day
           } else {
-            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 13, 0, 0); // 1:00 pm same day
+            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 20, 56, 0); // 4:30 pm same day
           }
 
-          // Return true if the current time is before the reservation time
-          return now.isBefore(reservationTime);
-*/
+          for (int i =0; i <currentRequests.length;i++) {
+            if (now.isAfter(reservationTime) && currentRequests[i]['Request_Status'].toString() == 'Pending') {
+             await userRequestsRef.child('UserRequests/${currentRequests[i]['User_ID']}').update({
+                'Request_Status': 'Rejected',
+              });
+              print(currentRequests[i]);
+              print('lolllll');
+            }
+          }
 
-          //print(availableTrips);
-        });
+
+
+          }
+        //print(currentRequests);
+
+
+        /*event.snapshot.children.forEach((child) async {
+
+
+
+
+          overdueRequests.clear();
+
+          userRequests.clear();
+          //requestVals = child.value as Map;
+          myVals = child.value as Map;
+          currentRequest = myVals['UserRequests'];
+          //print(currentRequest.values.toList());
+
+          // time constraints for drivers acceptance
+          // if time limit is exceeded, requests are automatically rejected
+
+         // print(tripDate);
+          currentRequest.values.toList().forEach((req) {
+            if(req['Request_Status'] != 'Rejected')
+              {
+                userRequests.add(req);
+                //print(userRequests);
+              }
+          });
+
+          userRequests.where((req){
+            DateTime tripDate = DateTime.parse(myVals['Date']);
+            print(tripDate);
+            DateTime reservationTime;
+            DateTime now = DateTime.now();
+            print(myVals['Time']);
+            if (myVals['Time'] == "7.30 AM") {
+              reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 23, 30, 0).subtract(Duration(days: 1)); // 11:30 pm previous day
+            } else {
+              reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 15, 0, 0); // 1:00 pm same day
+            }
+
+            // Return true if the current time is before the reservation time
+            if(now.isAfter(reservationTime) && req['Request_Status'] == 'Pending')
+            {
+
+              print('${req['name']}');
+              overdueRequests.add(req['name']);
+              
+            }
+            else{
+              print('mafish ${req['name']}');
+            }
+            return now.isBefore(reservationTime);
+          }).toList();
+          print(userRequests);
+          print('hela bela ${overdueRequests}');
+
+          if(overdueRequests.isNotEmpty)
+            {
+              for(String i in overdueRequests)
+              {
+                await userRequestsRef.child('${myVals['Trip_ID']}/UserRequests/$i').set(
+                    {
+                      'Request_Status':'Rejected'
+                    });
+
+              }
+              await userRequestsRef.child('${myVals['Trip_ID']}').set(
+                  {
+                    'Booking_Status':'Booked'
+                  });
+
+            }
+
+        });*/
+
+
 
 
         setState(() {
         });
       }
       else {
-        userRequests.clear();
+        currentRequests.clear();
+        overdueRequests.clear();
+        setState(() {
+        });
       }
     }, onError: (error) {
       print("error retrieving!");
@@ -117,33 +224,33 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
           // Passenger list
           Expanded(
             child: ListView.builder(
-              itemCount: userRequests.length,
+              itemCount: currentRequests.length,
               itemBuilder: (context, index) {
                 return Card(
 
-                  child: userRequests[index]['Request_Status'] != 'Pending' ?Container(
-                    color: userRequests[index]['Request_Status'] == 'Accepted' ? Colors.green : Colors.red,
+                  child: currentRequests[index]['Request_Status'] != 'Pending' ?Container(
+                    color: currentRequests[index]['Request_Status'] == 'Accepted' ? Colors.green : Colors.red,
                     child: ListTile(
 
 
-                      title: Text('${userRequests[index]['name']}\n${userRequests[index]['phone']}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                      title: Text('${currentRequests[index]['name']}\n${currentRequests[index]['phone']}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(userRequests[index]['userProfileImage']), // Replace with driver image URL
+                        backgroundImage: NetworkImage(currentRequests[index]['userProfileImage']!), // Replace with driver image URL
                         radius: 30,
                       ),
-                      subtitle: Text('Status: ${userRequests[index]['Request_Status']}' ,style: TextStyle(
-                          color: userRequests[index]['Request_Status'] == 'Accepted' ? Colors.white : Colors.white70
+                      subtitle: Text('Status: ${currentRequests[index]['Request_Status']}' ,style: TextStyle(
+                          color: currentRequests[index]['Request_Status'] == 'Accepted' ? Colors.white : Colors.white70
                       ),),
 
                     ),
                   ) : ListTile(
-                    title: Text('${userRequests[index]['name']}\n${userRequests[index]['phone']}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                    title: Text('${currentRequests[index]['name']}\n${currentRequests[index]['phone']}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
                     leading: CircleAvatar(
-                      backgroundImage: NetworkImage(userRequests[index]['userProfileImage']), // Replace with driver image URL
+                      backgroundImage: NetworkImage(currentRequests[index]['userProfileImage']!), // Replace with driver image URL
                       radius: 30,
                     ),
-                    subtitle: Text('Status: ${userRequests[index]['Request_Status']}' ,style: TextStyle(
-                      color: userRequests[index]['Request_Status'] == 'Accepted' ? Colors.green[900] : Colors.orange
+                    subtitle: Text('Status: ${currentRequests[index]['Request_Status']}' ,style: TextStyle(
+                      color: currentRequests[index]['Request_Status'] == 'Accepted' ? Colors.green[900] : Colors.orange
                     ),),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -152,14 +259,14 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
                           icon: Icon(Icons.check, color: Colors.green),
                           onPressed: () {
                             // Handle accept action
-                            _handleAcceptPassenger(userRequests[index]['User_ID']);
+                            _handleAcceptPassenger(currentRequests[index]['User_ID']!);
                           },
                         ),
                         IconButton(
                           icon: Icon(Icons.close, color: Colors.red),
                           onPressed: () {
                             // Handle reject action
-                            _handleRejectPassenger(userRequests[index]['User_ID']);
+                            _handleRejectPassenger(currentRequests[index]['User_ID']!);
                           },
                         ),
                       ],
@@ -233,7 +340,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
     tripRef.once().then((snap) async {
       if (snap.snapshot.value != null) {
         int noPass = (snap.snapshot.value as Map)["Passengers"];
-        if(noPass+1 == 2)
+        if(noPass+1 == 3)
         {
           await tripRef.update({
             'Passengers': noPass + 1
@@ -271,7 +378,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
 
 
         }
-        else if(noPass+1 < 2)
+        else if(noPass+1 < 3)
           {
             await tripRef.update({
               'Passengers': noPass + 1
