@@ -17,8 +17,6 @@ import 'Shared/SharedTheme/SharedColor.dart';
 import 'Shared/SharedWidgets/profile_widget.dart';
 import 'Shared/SharedWidgets/snack_widget.dart';
 import 'Shared/SharedWidgets/textfield_widget.dart';
-import 'User/user.dart';
-import 'User/user_preferences.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override

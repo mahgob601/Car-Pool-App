@@ -44,16 +44,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
     List<String> overdueRequests = [];
     userRequestsRef.onValue.listen((event) async {
       if (event.snapshot.exists) {
-        print('checkkkkking');
-
-        //Map <dynamic,dynamic> requestVals;
-        //Map <dynamic,dynamic> requestValsIndex;
-        //event.snapshot.
-        //thisTripInfo = event.snapshot.value as Map;
-
-
         final thisTripInfo = Map<String, dynamic>.from(event.snapshot.value as Map<dynamic, dynamic>);
-
         //userRequests = jsonDecode(thisTripInfo['UserRequests']);
         print(thisTripInfo['UserRequests'].keys.toList());
         currentRequests.clear();
@@ -65,112 +56,9 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
               'name':'${thisTripInfo['UserRequests'][key]['name']}', 'phone':'${thisTripInfo['UserRequests'][key]['phone']}',
               'userProfileImage':'${thisTripInfo['UserRequests'][key]['userProfileImage']}'
             };
-           /* if(thisTripInfo['UserRequests'][key]['Request_Status'] != 'Rejected'){
-              currentRequests.add(userRequests);
 
-                }*/
             currentRequests.add(userRequests);
           }
-        /*if (timeConstraintsFlag) {
-          DateTime tripDate = DateTime.parse(thisTripInfo['Date']);
-          print(tripDate);
-          DateTime reservationTime;
-          DateTime now = DateTime.now();
-          print(thisTripInfo['Time']);
-          if (thisTripInfo['Time'] == "7.30 AM") {
-            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 23, 30, 0).subtract(Duration(days: 1)); // 11:30 pm previous day
-          } else {
-            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 20, 56, 0); // 4:30 pm same day
-          }
-
-          for (int i =0; i <currentRequests.length;i++) {
-            if (now.isAfter(reservationTime) && currentRequests[i]['Request_Status'].toString() == 'Pending') {
-             await userRequestsRef.child('UserRequests/${currentRequests[i]['User_ID']}').update({
-                'Request_Status': 'Rejected',
-              });
-              print(currentRequests[i]);
-              print('lolllll');
-            }
-          }
-
-
-
-          }*/
-        //print(currentRequests);
-
-
-        /*event.snapshot.children.forEach((child) async {
-
-
-
-
-          overdueRequests.clear();
-
-          userRequests.clear();
-          //requestVals = child.value as Map;
-          myVals = child.value as Map;
-          currentRequest = myVals['UserRequests'];
-          //print(currentRequest.values.toList());
-
-          // time constraints for drivers acceptance
-          // if time limit is exceeded, requests are automatically rejected
-
-         // print(tripDate);
-          currentRequest.values.toList().forEach((req) {
-            if(req['Request_Status'] != 'Rejected')
-              {
-                userRequests.add(req);
-                //print(userRequests);
-              }
-          });
-
-          userRequests.where((req){
-            DateTime tripDate = DateTime.parse(myVals['Date']);
-            print(tripDate);
-            DateTime reservationTime;
-            DateTime now = DateTime.now();
-            print(myVals['Time']);
-            if (myVals['Time'] == "7.30 AM") {
-              reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 23, 30, 0).subtract(Duration(days: 1)); // 11:30 pm previous day
-            } else {
-              reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 15, 0, 0); // 1:00 pm same day
-            }
-
-            // Return true if the current time is before the reservation time
-            if(now.isAfter(reservationTime) && req['Request_Status'] == 'Pending')
-            {
-
-              print('${req['name']}');
-              overdueRequests.add(req['name']);
-              
-            }
-            else{
-              print('mafish ${req['name']}');
-            }
-            return now.isBefore(reservationTime);
-          }).toList();
-          print(userRequests);
-          print('hela bela ${overdueRequests}');
-
-          if(overdueRequests.isNotEmpty)
-            {
-              for(String i in overdueRequests)
-              {
-                await userRequestsRef.child('${myVals['Trip_ID']}/UserRequests/$i').set(
-                    {
-                      'Request_Status':'Rejected'
-                    });
-
-              }
-              await userRequestsRef.child('${myVals['Trip_ID']}').set(
-                  {
-                    'Booking_Status':'Booked'
-                  });
-
-            }
-
-        });*/
-
 
 
 

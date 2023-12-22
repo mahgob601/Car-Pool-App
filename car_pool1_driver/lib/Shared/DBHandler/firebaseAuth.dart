@@ -13,47 +13,55 @@ class firebaseAuthClass{
 
   loginDriver(BuildContext context, String emailData, String passwordData) async
   {
-    final User? userFirebase = (
-        await firebaseAuth.signInWithEmailAndPassword(
-            email: emailData.trim(),
-            password: passwordData.trim()).catchError((errorMsg){
-          ScaffoldMessenger.of(context).showSnackBar(snack(errorMsg.toString(), 3, Colors.red));
-        })
-    ).user;
+    if(emailData == 'testdriver@eng.asu.edu.eg')
+      {
+
+      }
+    else{
+      final User? userFirebase = (
+          await firebaseAuth.signInWithEmailAndPassword(
+              email: emailData.trim(),
+              password: passwordData.trim()).catchError((errorMsg){
+            ScaffoldMessenger.of(context).showSnackBar(snack(errorMsg.toString(), 3, Colors.red));
+          })
+      ).user;
 
 
-    if(userFirebase != null)
-    {
-      DatabaseReference usersRef = await FirebaseDatabase.instance.ref().child("drivers").child(userFirebase.uid);
-      usersRef.once().then((snap) {
-        if(snap.snapshot.value != null)
-        {
-          if((snap.snapshot.value as Map)["blockStatus"] == "no" && (snap.snapshot.value as Map)["isDriver"] == "Yes")
+      if(userFirebase != null)
+      {
+        DatabaseReference usersRef = await FirebaseDatabase.instance.ref().child("drivers").child(userFirebase.uid);
+        usersRef.once().then((snap) {
+          if(snap.snapshot.value != null)
           {
-            userName = (snap.snapshot.value as Map)["name"];
-            userEmail = (snap.snapshot.value as Map)["email"];
-            userID = (snap.snapshot.value as Map)["id"];
+            if((snap.snapshot.value as Map)["blockStatus"] == "no" && (snap.snapshot.value as Map)["isDriver"] == "Yes")
+            {
+              userName = (snap.snapshot.value as Map)["name"];
+              userEmail = (snap.snapshot.value as Map)["email"];
+              userID = (snap.snapshot.value as Map)["id"];
 
-            profileImageURL =(snap.snapshot.value as Map)["ProfileImage"];
-            driverNumber = (snap.snapshot.value as Map)["phone"];
+              profileImageURL =(snap.snapshot.value as Map)["ProfileImage"];
+              driverNumber = (snap.snapshot.value as Map)["phone"];
 
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+            }
+
+            else
+            {
+              FirebaseAuth.instance.signOut();
+              ScaffoldMessenger.of(context).showSnackBar(snack("Some error happened please contact the admin!", 3, Colors.red));
+            }
+
           }
-
-          else
-          {
+          else{
             FirebaseAuth.instance.signOut();
-            ScaffoldMessenger.of(context).showSnackBar(snack("Some error happened please contact the admin!", 3, Colors.red));
+            ScaffoldMessenger.of(context).showSnackBar(snack("Driver doesn't seem to exist", 3, Colors.red));
+
           }
+        });
+      }
 
-        }
-        else{
-          FirebaseAuth.instance.signOut();
-          ScaffoldMessenger.of(context).showSnackBar(snack("Driver doesn't seem to exist", 3, Colors.red));
-
-        }
-      });
     }
+
 
 
   }

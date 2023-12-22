@@ -1,7 +1,6 @@
 import 'package:car_pool1_driver/models/global_var.dart';
 import 'package:car_pool1_driver/Shared/SharedTheme/SharedColor.dart';
 import 'package:car_pool1_driver/Shared/SharedWidgets/drawer_widget.dart';
-import 'package:car_pool1_driver/User/user_preferences.dart';
 import 'package:car_pool1_driver/edit_profile_page.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +17,7 @@ class MyProfile extends StatefulWidget {
 class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
-    final user = UserPreferences.myUser;
+
     return Scaffold(
       appBar: AppBar(
         title: Padding(
@@ -108,7 +107,7 @@ class _MyProfileState extends State<MyProfile> {
             Column(
               children: [
                 Text(
-                    userName != ''? userName : "Test",
+                    userName,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -117,14 +116,14 @@ class _MyProfileState extends State<MyProfile> {
                 ),
                 SizedBox(height: 14,),
                 Text(
-                    userEmail != ''? userEmail : "test@test.com",
+                    userEmail,
                   style: TextStyle(color: Colors.grey),
 
                 ),
                 SizedBox(height: 24,),
 
                 Text(
-                  'Trips Completed: 15',
+                  userEmail,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
