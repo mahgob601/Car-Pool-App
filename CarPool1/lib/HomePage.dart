@@ -78,65 +78,88 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: myDrawer(),
 
-      body: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: ListView.builder(
-          itemCount: availableTrips.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: Card(
+      body: Column(
+        children: [
+          ElevatedButton(onPressed: (){
+            timeConstraintsForUser = !timeConstraintsForUser;
+            setState(() {
 
-                color: availableTrips[index]["Booking_Status"] == 'Available'
-                    ? SharedColor.tealColor
-                    : Colors.orange,
-                child: ListTile(
+            });
+          }, child: timeConstraintsForUser? Text('Time Constraints is ON', style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white
+          ),):Text('Time Constraints is OFF', style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white
+          )),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: timeConstraintsForUser? Colors.green:Colors.red
+            ),),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: ListView.builder(
+                itemCount: availableTrips.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Card(
 
-                  title: Text(
-                    'From: ${availableTrips[index]["Pickup"]}\nTo: ${availableTrips[index]["Dropoff"]}',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
+                      color: availableTrips[index]["Booking_Status"] == 'Available'
+                          ? SharedColor.tealColor
+                          : Colors.orange,
+                      child: ListTile(
+
+                        title: Text(
+                          'From: ${availableTrips[index]["Pickup"]}\nTo: ${availableTrips[index]["Dropoff"]}',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold
 
 
+                          ),
+
+                        ),
+
+
+                        leading: Text(
+                          '${int.parse(availableTrips[index]["Date"].split(
+                              '-')[2])} ${monthToCapital[availableTrips[index]["Date"]
+                              .split('-')[1]]}\n${availableTrips[index]["Time"]}',
+                          style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14
+                          ),
+                        ),
+                        trailing: Text(
+                          '${availableTrips[index]["Offered_Price"]} EGP',
+                          style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16
+                          ),
+                        ),
+                        onTap: () async {
+                          //List<dynamic> driverInfo;
+                          await TC.fetchDriverData(availableTrips[index]['Driver_ID']);
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) =>
+                                  TripDetailsPage(
+                                      availableTrips[index], myDriverInfo[0]['name'],
+                                      myDriverInfo[0]['ProfileImage'],
+                                      myDriverInfo[0]['car_info'],
+                                      myDriverInfo[0]['phone'])));
+                        },
+                      ),
                     ),
-
-                  ),
-
-
-                  leading: Text(
-                    '${int.parse(availableTrips[index]["Date"].split(
-                        '-')[2])} ${monthToCapital[availableTrips[index]["Date"]
-                        .split('-')[1]]}\n${availableTrips[index]["Time"]}',
-                    style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14
-                    ),
-                  ),
-                  trailing: Text(
-                    '${availableTrips[index]["Offered_Price"]} EGP',
-                    style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16
-                    ),
-                  ),
-                  onTap: () async {
-                    //List<dynamic> driverInfo;
-                    await TC.fetchDriverData(availableTrips[index]['Driver_ID']);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) =>
-                            TripDetailsPage(
-                                availableTrips[index], myDriverInfo[0]['name'],
-                                myDriverInfo[0]['ProfileImage'],
-                                myDriverInfo[0]['car_info'],
-                                myDriverInfo[0]['phone'])));
-                  },
-                ),
+                  );
+                },
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }

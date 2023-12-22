@@ -123,7 +123,7 @@ class _MyProfileState extends State<MyProfile> {
                 SizedBox(height: 24,),
 
                 Text(
-                  userEmail,
+                  driverNumber,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),

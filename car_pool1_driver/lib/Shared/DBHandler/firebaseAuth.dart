@@ -13,9 +13,30 @@ class firebaseAuthClass{
 
   loginDriver(BuildContext context, String emailData, String passwordData) async
   {
-    if(emailData == 'testdriver@eng.asu.edu.eg')
+    if(emailData == 'testdriver@eng.asu.edu.eg' && passwordData=='123456')
       {
+        DatabaseReference testdrivRef = await FirebaseDatabase.instance.ref().child("drivers").child('TESTDRIVER');
+        testdrivRef.once().then((snap) {
+          if(snap.snapshot.value != null) {
+            if ((snap.snapshot.value as Map)["blockStatus"] == "no" &&
+                (snap.snapshot.value as Map)["isDriver"] == "Yes") {
+              userName = (snap.snapshot.value as Map)["name"];
+              userEmail = (snap.snapshot.value as Map)["email"];
+              userID = (snap.snapshot.value as Map)["id"];
 
+              profileImageURL = (snap.snapshot.value as Map)["ProfileImage"];
+              driverNumber = (snap.snapshot.value as Map)["phone"];
+
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => HomePage()));
+            }
+          }
+          else{
+            ScaffoldMessenger.of(context).showSnackBar(snack("Error retrieving data", 3, Colors.red));
+          }
+
+
+          });
       }
     else{
       final User? userFirebase = (

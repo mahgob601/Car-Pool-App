@@ -56,22 +56,24 @@ fetchAllTrips() async
         //print(availableTrips);
       });
       availableTrips.map((e) => e);
-      availableTrips = availableTrips.where((theTrip) {
-        DateTime tripDate = DateTime.parse(theTrip['Date']);
-        print(tripDate);
-        DateTime reservationTime;
+      if(timeConstraintsForUser){
+        availableTrips = availableTrips.where((theTrip) {
+          DateTime tripDate = DateTime.parse(theTrip['Date']);
+          print(tripDate);
+          DateTime reservationTime;
 
-        DateTime now = DateTime.now();
+          DateTime now = DateTime.now();
 
-        if (theTrip['Time'] == "7.30 AM") {
-          reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 22, 0, 0).subtract(Duration(days: 1)); // 10:00 pm previous day
-        } else {
-          reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 16, 0, 0); // 1:00 pm same day
-        }
+          if (theTrip['Time'] == "7.30 AM") {
+            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 22, 0, 0).subtract(Duration(days: 1)); // 10:00 pm previous day
+          } else {
+            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 16, 0, 0); // 1:00 pm same day
+          }
 
-        // Return true if the current time is before the reservation time
-        return now.isBefore(reservationTime);
-      }).toList();
+          // Return true if the current time is before the reservation time
+          return now.isBefore(reservationTime);
+        }).toList();
+      }
 
 
       HomePage.updateState();

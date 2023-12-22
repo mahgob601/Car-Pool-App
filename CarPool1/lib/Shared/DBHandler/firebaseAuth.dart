@@ -1,5 +1,3 @@
-
-
 import 'package:car_pool1/HomePage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +11,12 @@ import '../SharedWidgets/snack_widget.dart';
 class firebaseAuthClass{
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  loginDriver(BuildContext context, String emailData, String passwordData) async
+  loginUser(BuildContext context, email, password) async
   {
     final User? userFirebase = (
-        await firebaseAuth.signInWithEmailAndPassword(
-            email: emailData.trim(),
-            password: passwordData.trim()).catchError((errorMsg){
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: email,
+            password: password.text.trim()).catchError((errorMsg){
           ScaffoldMessenger.of(context).showSnackBar(snack(errorMsg.toString(), 3, Colors.red));
         })
     ).user;
@@ -34,9 +32,9 @@ class firebaseAuthClass{
           {
             userName = (snap.snapshot.value as Map)["name"];
             userEmail = (snap.snapshot.value as Map)["email"];
-            userID = (snap.snapshot.value as Map)["id"];
-
             profileImageURL =(snap.snapshot.value as Map)["ProfileImage"];
+            userID = (snap.snapshot.value as Map)["id"];
+            userPhone = (snap.snapshot.value as Map)["phone"];
 
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
           }
@@ -58,6 +56,7 @@ class firebaseAuthClass{
 
 
   }
+
 
   getCurrentUserID() async{
     return await firebaseAuth.currentUser!.uid;

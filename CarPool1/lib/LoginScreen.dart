@@ -5,6 +5,7 @@ import 'package:car_pool1/HomePage.dart';
 import 'package:car_pool1/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'Shared/DBHandler/firebaseAuth.dart';
 import 'package:flutter/material.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedColor.dart';
 import 'package:car_pool1/Shared/SharedTheme/SharedFont.dart';
@@ -31,52 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isSecured = true;
 
 
-
-  loginUser() async
-  {
-    final User? userFirebase = (
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: emailController.text.trim(),
-            password: passwordController.text.trim()).catchError((errorMsg){
-          ScaffoldMessenger.of(context).showSnackBar(snack(errorMsg.toString(), 3, Colors.red));
-        })
-    ).user;
-
-
-    if(userFirebase != null)
-      {
-        DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users").child(userFirebase.uid);
-        usersRef.once().then((snap) {
-          if(snap.snapshot.value != null)
-            {
-              if((snap.snapshot.value as Map)["blockStatus"] == "no" && (snap.snapshot.value as Map)["isDriver"] == "No")
-                {
-                  userName = (snap.snapshot.value as Map)["name"];
-                  userEmail = (snap.snapshot.value as Map)["email"];
-                  profileImageURL =(snap.snapshot.value as Map)["ProfileImage"];
-                  userID = (snap.snapshot.value as Map)["id"];
-                  userPhone = (snap.snapshot.value as Map)["phone"];
-
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
-                }
-
-              else
-                {
-                  FirebaseAuth.instance.signOut();
-                  ScaffoldMessenger.of(context).showSnackBar(snack("Some error happened please contact the admin!", 3, Colors.red));
-                }
-
-            }
-          else{
-            FirebaseAuth.instance.signOut();
-            ScaffoldMessenger.of(context).showSnackBar(snack("User doesn't seem to exist", 3, Colors.red));
-
-          }
-        });
-      }
-
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         snack('Missing Required Fields', 3, Colors.red)
                     );
                   } else {
-                    loginUser();
+                    firebaseAuthClass().loginUser(context,emailController.text.trim(),passwordController.text.trim());
                   }
                 },
               ),
