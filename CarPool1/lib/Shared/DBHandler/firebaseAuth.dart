@@ -16,7 +16,7 @@ class firebaseAuthClass{
     final User? userFirebase = (
         await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: email,
-            password: password.text.trim()).catchError((errorMsg){
+            password: password).catchError((errorMsg){
           ScaffoldMessenger.of(context).showSnackBar(snack(errorMsg.toString(), 3, Colors.red));
         })
     ).user;
