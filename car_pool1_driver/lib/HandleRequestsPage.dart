@@ -65,12 +65,13 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
               'name':'${thisTripInfo['UserRequests'][key]['name']}', 'phone':'${thisTripInfo['UserRequests'][key]['phone']}',
               'userProfileImage':'${thisTripInfo['UserRequests'][key]['userProfileImage']}'
             };
-            if(thisTripInfo['UserRequests'][key]['Request_Status'] != 'Rejected'){
+           /* if(thisTripInfo['UserRequests'][key]['Request_Status'] != 'Rejected'){
               currentRequests.add(userRequests);
 
-                }
+                }*/
+            currentRequests.add(userRequests);
           }
-        if (timeConstraintsFlag) {
+        /*if (timeConstraintsFlag) {
           DateTime tripDate = DateTime.parse(thisTripInfo['Date']);
           print(tripDate);
           DateTime reservationTime;
@@ -94,7 +95,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
 
 
 
-          }
+          }*/
         //print(currentRequests);
 
 
@@ -179,8 +180,8 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
       else {
         currentRequests.clear();
         overdueRequests.clear();
-        setState(() {
-        });
+        /*setState(() {
+        });*/
       }
     }, onError: (error) {
       print("error retrieving!");
@@ -221,6 +222,23 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
               ),
             ),
           ),
+          ElevatedButton(onPressed: (){
+            timeConstraintsFlag = !timeConstraintsFlag;
+            setState(() {
+
+            });
+          }, child: timeConstraintsFlag? Text('Time Constraints is ON', style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white
+          ),):Text('Time Constraints is OFF', style: TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: Colors.white
+    )),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: timeConstraintsFlag? Colors.green:Colors.red
+          ),),
           // Passenger list
           Expanded(
             child: ListView.builder(
@@ -259,7 +277,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
                           icon: Icon(Icons.check, color: Colors.green),
                           onPressed: () {
                             // Handle accept action
-                            _handleAcceptPassenger(currentRequests[index]['User_ID']!);
+                            _handleAcceptPassenger(index,currentRequests[index]['User_ID']!);
                           },
                         ),
                         IconButton(
@@ -326,11 +344,12 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
     );
   }
 
-  void _handleAcceptPassenger(String userID) async{
+  void _handleAcceptPassenger(int i, String theuserID) async{
     var database = await FirebaseDatabase.instance
         .ref()
         .child("Trips/${widget.tripID}/UserRequests")
         .once();
+    Map<dynamic,dynamic> checkTrip = {};
 
     // hena
 
@@ -338,62 +357,155 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
     // Implement logic to accept the passenger
     DatabaseReference tripRef = FirebaseDatabase.instance.ref("Trips/${widget.tripID}");
     tripRef.once().then((snap) async {
+      checkTrip = snap.snapshot.value as Map;
+
+
+        DateTime tripDate = DateTime.parse(checkTrip['Date']);
+        print(tripDate);
+        DateTime reservationTime;
+        DateTime now = DateTime.now();
+        print(checkTrip['Time']);
+        if (checkTrip['Time'] == "7.30 AM") {
+          reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 23, 30, 0).subtract(Duration(days: 1)); // 11:30 pm previous day
+        } else {
+          reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 16, 30, 0); // 4:30 pm same day
+        }
+
+
+
+
+
+
       if (snap.snapshot.value != null) {
         int noPass = (snap.snapshot.value as Map)["Passengers"];
-        if(noPass+1 == 3)
-        {
-          await tripRef.update({
-            'Passengers': noPass + 1
-          });
-          await tripRef.child('UserRequests/$userID').update({
-            'Request_Status':'Accepted'
-          });
-          await tripRef.update({
-            'Booking_Status': 'Booked'
-          });
-
-          Map<dynamic,dynamic> myreqs = await database.snapshot.value as Map;
-          late List pendingUsers = [];
-          myreqs.forEach((key, value) {
-            if(value['Request_Status'] == 'Pending' && key.toString() != userID)
-            {
-              pendingUsers.add(key.toString());
-            }
-          });
-
-          for(String i in pendingUsers)
-            {
-              await tripRef.child('UserRequests/${i}').update({
-                'Request_Status':'Rejected'
-              });
-
-            }
-
-          /*print(myreqs);
-          print('lol');
-          print(pendingUsers);*/
-          //hena
-
-
-
-
-        }
-        else if(noPass+1 < 3)
-          {
+        if (timeConstraintsFlag) {
+          if (noPass + 1 == 3 && now.isBefore(reservationTime)) {
             await tripRef.update({
               'Passengers': noPass + 1
             });
-            await tripRef.child('UserRequests/$userID').update({
-              'Request_Status':'Accepted'
+            await tripRef.child('UserRequests/$theuserID').update({
+              'Request_Status': 'Accepted'
+            });
+            await tripRef.update({
+              'Booking_Status': 'Booked'
+            });
+
+            Map<dynamic, dynamic> myreqs = await database.snapshot.value as Map;
+            late List pendingUsers = [];
+            myreqs.forEach((key, value) {
+              if (value['Request_Status'] == 'Pending' &&
+                  key.toString() != userID) {
+                pendingUsers.add(key.toString());
+              }
+            });
+
+            for (String i in pendingUsers) {
+              await tripRef.child('UserRequests/${i}').update({
+                'Request_Status': 'Rejected'
+              });
+            }
+
+            /*print(myreqs);
+          print('lol');
+          print(pendingUsers);*/
+            //hena
+
+          }
+          else if (noPass + 1 < 3 && now.isBefore(reservationTime)) {
+            await tripRef.update({
+              'Passengers': noPass + 1
+            });
+            await tripRef.child('UserRequests/$theuserID').update({
+              'Request_Status': 'Accepted'
             });
           }
-        else
-          {
-            ScaffoldMessenger.of(context).showSnackBar(snack("Cannot accept more than 3 clients for a ride", 3, Colors.red));
-            await tripRef.child('UserRequests/$userID').update({
-              'Request_Status':'Rejected'
+          else if (noPass + 1 == 3 && now.isAfter(reservationTime)) {
+
+              if (currentRequests[i]['Request_Status'].toString() ==
+                  'Pending') {
+                await tripRef.child(
+                    'UserRequests/$theuserID').update({
+                  'Request_Status': 'Rejected',
+                });
+                ScaffoldMessenger.of(context).showSnackBar(snack(
+                    "Time Limit to accept is exceeded", 3, Colors.red));
+              }
+
+
+          }
+          else if (noPass + 1 < 3 && now.isAfter(reservationTime)) {
+            if (currentRequests[i]['Request_Status'].toString() ==
+                'Pending') {
+              await tripRef.child(
+                  'UserRequests/$theuserID').update({
+                'Request_Status': 'Rejected',
+              });
+              ScaffoldMessenger.of(context).showSnackBar(snack(
+                  "Time Limit to accept is exceeded", 3, Colors.red));
+            }
+
+          }
+          else {
+            ScaffoldMessenger.of(context).showSnackBar(snack(
+                "Cannot accept more than 3 clients for a ride", 3, Colors.red));
+            await tripRef.child('UserRequests/$theuserID').update({
+              'Request_Status': 'Rejected'
             });
           }
+        }
+        else{
+          if (noPass + 1 == 3) {
+            await tripRef.update({
+              'Passengers': noPass + 1
+            });
+            await tripRef.child('UserRequests/$theuserID').update({
+              'Request_Status': 'Accepted'
+            });
+            await tripRef.update({
+              'Booking_Status': 'Booked'
+            });
+
+            Map<dynamic, dynamic> myreqs = await database.snapshot.value as Map;
+            late List pendingUsers = [];
+            myreqs.forEach((key, value) {
+              if (value['Request_Status'] == 'Pending' &&
+                  key.toString() != userID) {
+                pendingUsers.add(key.toString());
+              }
+            });
+
+            for (String i in pendingUsers) {
+              await tripRef.child('UserRequests/${i}').update({
+                'Request_Status': 'Rejected'
+              });
+            }
+
+            /*print(myreqs);
+          print('lol');
+          print(pendingUsers);*/
+            //hena
+
+          }
+          else if (noPass + 1 < 3 ) {
+            await tripRef.update({
+              'Passengers': noPass + 1
+            });
+            await tripRef.child('UserRequests/$theuserID').update({
+              'Request_Status': 'Accepted'
+            });
+          }
+          else{
+            ScaffoldMessenger.of(context).showSnackBar(snack(
+                "Cannot accept more than 3 clients for a ride", 3, Colors.red));
+            await tripRef.child('UserRequests/$theuserID').update({
+              'Request_Status': 'Rejected'
+            });
+
+          }
+
+
+      }
+
       }
     });
 
@@ -404,7 +516,7 @@ class _HandleRequestsPageState extends State<HandleRequestsPage> {
 
     
     //print('Accepted ${userID}');
-    setState(() {});
+    //setState(() {});
   }
 
   void _handleRejectPassenger(String userID) async{
