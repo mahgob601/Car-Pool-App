@@ -67,7 +67,7 @@ fetchAllTrips() async
           if (theTrip['Time'] == "7.30 AM") {
             reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 22, 0, 0).subtract(Duration(days: 1)); // 10:00 pm previous day
           } else {
-            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 16, 0, 0); // 1:00 pm same day
+            reservationTime = DateTime(tripDate.year, tripDate.month, tripDate.day, 13, 0, 0); // 1:00 pm same day
           }
 
           // Return true if the current time is before the reservation time
