@@ -108,7 +108,7 @@ class _MyProfileState extends State<MyProfile> {
             Column(
               children: [
                 Text(
-                    userName != ''? userName : "Test",
+                    userName,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class _MyProfileState extends State<MyProfile> {
                 ),
                 SizedBox(height: 14,),
                 Text(
-                    userEmail != ''? userEmail : "test@test.com",
+                    userEmail,
                   style: TextStyle(color: Colors.grey),
 
                 ),
@@ -125,12 +125,11 @@ class _MyProfileState extends State<MyProfile> {
 
 
                     SizedBox(height: 2,),
-                    Text(
-                      'Trips Completed: 15',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                Text(
+                  userPhone,
+                  style: TextStyle(color: Colors.grey),
+
+                ),
 
 
                   ],

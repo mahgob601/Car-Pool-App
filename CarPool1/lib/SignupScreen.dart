@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:car_pool1/Globals/global_var.dart';
+import 'package:car_pool1/Shared/DBHandler/firebaseAuth.dart';
 import 'package:car_pool1/LoginScreen.dart';
 import 'package:car_pool1/Shared/DBHandler/firebase_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -35,38 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   DateTime selectedDate = DateTime(1970);
 
 
-  registerUser() async
-  {
-    final User? userFirebase = (
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim()).catchError((errorMsg){
-      ScaffoldMessenger.of(context).showSnackBar(snack(errorMsg.toString(), 3, Colors.red));
-    })
-    ).user;
 
-    final ByteData bytes = await rootBundle.load('assets/images/defaultProfile.png');
-    final Uint8List imagelist = bytes.buffer.asUint8List();
-    profileImageURL = await StoreData().uploadImage("users/ProfileImage/${userFirebase!.uid}/myImage", imagelist);
-
-
-    DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users").child(userFirebase!.uid);
-    Map userDataMap =
-        {
-          "ProfileImage": profileImageURL,
-          "name": usernameController.text.trim(),
-          "email": emailController.text.trim(),
-          "phone":phonenumberController.text.trim(),
-          "id": userFirebase.uid,
-          "isDriver": "No",
-          "blockStatus":"no",
-
-
-        };
-    usersRef.set(userDataMap);
-
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginScreen()));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +105,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       );
                     }
                   else {
-                    registerUser();
+                    firebaseAuthClass().registerUser(context,emailController.text.trim(),passwordController.text.trim(),usernameController.text.trim(),phonenumberController.text.trim());
                   }
                 },
               ),
